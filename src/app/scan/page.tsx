@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { formatAddress } from "@/lib/web3";
 
-export default function ScanPage() {
+function ScanPageContent() {
   const [walletConnected, setWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -221,5 +221,25 @@ export default function ScanPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function ScanPageFallback() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-blue-50 p-4">
+      <div className="max-w-md mx-auto">
+        <div className="text-center py-8">
+          <p className="text-gray-600">Chargement...</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function ScanPage() {
+  return (
+    <Suspense fallback={<ScanPageFallback />}>
+      <ScanPageContent />
+    </Suspense>
   );
 }
