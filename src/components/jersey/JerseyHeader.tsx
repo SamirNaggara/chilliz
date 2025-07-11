@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { Shield, Zap } from "lucide-react";
+import { JerseyWalletConnector } from "@/components/JerseyWalletConnector";
+import { Shield } from "lucide-react";
 
 export function JerseyHeader() {
   return (
@@ -15,10 +15,7 @@ export function JerseyHeader() {
             </span>
           </div>
 
-          <Button className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700 text-white font-semibold">
-            <Zap className="w-4 h-4 mr-2" />
-            Connect with Chilliz
-          </Button>
+          <JerseyWalletConnector variant="header" />
         </div>
       </div>
     </div>

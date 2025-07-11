@@ -12,17 +12,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Vérifier si l'utilisateur existe, sinon le créer
-    let user = await prisma.user.findUnique({
-      where: { wallet: walletAddress.toLowerCase() },
-    });
-
-    if (!user) {
-      user = await prisma.user.create({
-        data: { wallet: walletAddress.toLowerCase() },
-      });
-    }
-
     // Vérifier si le maillot existe
     const jersey = await prisma.jersey.findUnique({
       where: { id: jerseyId },
@@ -38,7 +27,7 @@ export async function POST(request: NextRequest) {
     // Vérifier si l'utilisateur a déjà scanné ce maillot
     const existingScan = await prisma.scan.findFirst({
       where: {
-        userId: user.id,
+        walletAddress: walletAddress.toLowerCase(),
         jerseyId: jerseyId,
       },
     });
@@ -63,7 +52,10 @@ export async function POST(request: NextRequest) {
 
     if (recentScan) {
       return NextResponse.json(
-        { success: false, error: "Ce maillot vient d'être scanné, réessayez dans 1 minute" },
+        {
+          success: false,
+          error: "Ce maillot vient d'être scanné, réessayez dans 1 minute",
+        },
         { status: 429 }
       );
     }
@@ -71,11 +63,10 @@ export async function POST(request: NextRequest) {
     // Créer le scan
     const scan = await prisma.scan.create({
       data: {
-        userId: user.id,
+        walletAddress: walletAddress.toLowerCase(),
         jerseyId: jerseyId,
       },
       include: {
-        user: true,
         jersey: true,
       },
     });
@@ -85,7 +76,6 @@ export async function POST(request: NextRequest) {
       scan,
       message: "Maillot ajouté à ta collection !",
     });
-
   } catch (error) {
     console.error("Erreur API scan:", error);
     return NextResponse.json(
