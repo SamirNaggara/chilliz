@@ -2,6 +2,8 @@ import { getUsers, getJerseys } from "@/lib/actions";
 import { CreateUserForm } from "@/components/CreateUserForm";
 import { CreateJerseyForm } from "@/components/CreateJerseyForm";
 import { CreateScanForm } from "@/components/CreateScanForm";
+import WalletConnector from "@/components/WalletConnector";
+import WalletInfo from "@/components/WalletInfo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function Home() {
@@ -18,6 +20,12 @@ export default async function Home() {
       <h1 className="text-4xl font-bold text-center mb-8">
         🏆 POC Chilliz - Gestion des Maillots
       </h1>
+
+      {/* Section Web3 / Wallet */}
+      <div className="flex justify-center gap-6 mb-8 flex-wrap">
+        <WalletConnector />
+        <WalletInfo />
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Formulaire de création d'utilisateur */}
