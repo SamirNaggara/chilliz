@@ -1,202 +1,316 @@
-# 🏆 POC Chilliz - Gestion des Maillots
+# POC Chilliz - PSG Jersey Scanner
 
-Un projet Next.js avec Prisma SQLite et intégration Web3 pour gérer les utilisateurs, maillots et scans avec support de wallet Ethereum/Chiliz.
+## 🎯 Objectif du Projet
 
-## 🚀 Technologies utilisées
+Application Next.js 15 pour scanner des puces sécurisées sur des maillots PSG et offrir une expérience utilisateur gamifiée avec intégration Chilliz.
 
-- **Next.js 15** avec App Router
-- **TypeScript** pour le typage statique
-- **Prisma** avec SQLite pour la base de données
-- **Tailwind CSS** pour le styling
-- **shadcn/ui** pour les composants UI
-- **Server Actions** pour le backend
-- **Wagmi + Viem** pour l'intégration Web3
-- **Ethers.js** pour les interactions blockchain
-- **RainbowKit** pour la connexion wallet
-- **TanStack Query** pour la gestion d'état
+## 🏗️ Architecture et Bonnes Pratiques
 
-## 📋 Fonctionnalités
-
-### Base de données
-- ✅ Création d'utilisateurs avec adresse wallet
-- ✅ Création de maillots avec ID et nom
-- ✅ Enregistrement de scans (utilisateur + maillot)
-- ✅ Affichage des données en temps réel
-- ✅ Interface moderne avec shadcn/ui
-
-### Web3 / Blockchain
-- ✅ Connexion MetaMask et autres wallets
-- ✅ Support multi-chaînes (Ethereum, Polygon, Arbitrum, Chiliz)
-- ✅ Affichage du solde et informations wallet
-- ✅ Gestion des erreurs Web3
-- ✅ Hooks React personnalisés pour Web3
-- ✅ Utilitaires Chiliz Chain
-
-## 🗄️ Modèle de données
-
-### User
-
-- `id`: Identifiant unique (cuid)
-- `wallet`: Adresse wallet unique
-- `scans`: Relation avec les scans
-- `winners`: Relation avec les gains
-- `createdAt`: Date de création
-
-### Jersey
-
-- `id`: Identifiant du maillot (peut être l'ID physique de la puce)
-- `name`: Nom ou description du maillot
-- `scans`: Relation avec les scans
-- `createdAt`: Date de création
-
-### Scan
-
-- `id`: Identifiant unique (cuid)
-- `user`: Relation avec l'utilisateur
-- `jersey`: Relation avec le maillot
-- `scannedAt`: Date et heure du scan
-
-### Contest
-
-- `id`: Identifiant unique (cuid)
-- `startedAt`: Date de début
-- `endedAt`: Date de fin (optionnel)
-- `winners`: Relation avec les gagnants
-- `createdAt`: Date de création
-
-### Winner
-
-- `id`: Identifiant unique (cuid)
-- `contest`: Relation avec le concours
-- `user`: Relation avec l'utilisateur
-- `prize`: Description du prix gagné
-
-## 🛠️ Installation
-
-### Prérequis
-- Node.js 18+ 
-- npm ou yarn
-- MetaMask ou autre wallet compatible
-
-### 1. Cloner le projet
-
-```bash
-git clone <repository-url>
-cd poc-chilliz
-```
-
-### 2. Installer les dépendances
-
-```bash
-npm install
-```
-
-### 3. Configurer les variables d'environnement
-
-```bash
-cp .env.example .env.local
-```
-
-Éditez `.env.local` et ajoutez votre Project ID WalletConnect (voir GUIDE_WEB3.md)
-
-### 4. Initialiser la base de données
-
-```bash
-npm run db:migrate
-```
-
-### 5. Démarrer en développement
-
-```bash
-npm run dev
-```
-
-### 6. Configurer MetaMask
-
-Suivez le guide complet dans `GUIDE_WEB3.md` pour :
-- Installer MetaMask
-- Ajouter les réseaux Chiliz
-- Configurer les wallets de test
-```
-
-2. **Installer les dépendances**
-
-```bash
-npm install
-```
-
-3. **Configurer la base de données**
-
-```bash
-npx prisma generate
-npx prisma migrate dev
-```
-
-4. **Lancer le serveur de développement**
-
-```bash
-npm run dev
-```
-
-5. **Ouvrir dans le navigateur**
-
-```
-http://localhost:3000
-```
-
-## 📁 Structure du projet
+### 📁 Structure des Dossiers
 
 ```
 src/
-├── app/
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
-├── components/
-│   ├── ui/           # Composants shadcn/ui
-│   ├── CreateUserForm.tsx
-│   ├── CreateJerseyForm.tsx
-│   └── CreateScanForm.tsx
-└── lib/
-    ├── actions.ts    # Server Actions
-    ├── prisma.ts     # Configuration Prisma
-    └── utils.ts      # Utilitaires
+├── app/                    # Pages Next.js (App Router)
+│   ├── jersey/[id]/       # Page dynamique des maillots
+│   └── page.tsx           # Page d'accueil
+├── components/            # Composants réutilisables
+│   ├── ui/               # Composants UI de base (shadcn/ui)
+│   ├── layout/           # Composants de mise en page
+│   ├── features/         # Composants spécifiques aux fonctionnalités
+│   └── common/           # Composants communs réutilisables
+├── lib/                  # Utilitaires et configurations
+├── types/                # Types TypeScript
+└── styles/               # Styles globaux
 ```
 
-## 🔧 Commandes utiles
+### 🧩 Règles de Création des Composants
+
+#### 1. **Taille Maximum des Composants**
+
+- **Maximum 200 lignes** par composant
+- Si un composant dépasse 150 lignes, le diviser en sous-composants
+- Un fichier de composant ne doit jamais dépasser 300 lignes
+
+#### 2. **Responsabilité Unique**
+
+- Un composant = une responsabilité
+- Exemple : `JerseyCard` pour l'affichage, `JerseyActions` pour les actions
+
+#### 3. **Composants Atomiques**
+
+```typescript
+// ✅ Bon - Composant simple et réutilisable
+export function JerseyImage({ src, alt, fallbackSrc }: JerseyImageProps) {
+  return <img src={src} alt={alt} onError={handleError} />;
+}
+
+// ❌ Mauvais - Composant trop complexe
+export function JerseyPage() {
+  // 300+ lignes de logique mélangée
+}
+```
+
+#### 4. **Composition plutôt qu'Héritage**
+
+```typescript
+// ✅ Bon - Composition
+<Card>
+  <CardHeader>
+    <CardTitle>Maillot PSG</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <JerseyImage />
+  </CardContent>
+</Card>
+
+// ❌ Mauvais - Composant monolithique
+<JerseyCardWithImageAndActions />
+```
+
+### 📋 Checklist de Création de Composant
+
+Avant de créer un composant, vérifiez :
+
+- [ ] Le composant a-t-il une responsabilité unique ?
+- [ ] Fera-t-il moins de 200 lignes ?
+- [ ] Peut-il être réutilisé ailleurs ?
+- [ ] A-t-il des props TypeScript bien définies ?
+- [ ] Est-il testable de manière isolée ?
+
+### 🎨 Conventions de Nommage
+
+#### Composants
+
+```typescript
+// ✅ Bon
+JerseyImage.tsx;
+UserProfile.tsx;
+ShopProductCard.tsx;
+
+// ❌ Mauvais
+jersey - image.tsx;
+user_profile.tsx;
+shop - product - card.tsx;
+```
+
+#### Props Interfaces
+
+```typescript
+// ✅ Bon
+interface JerseyImageProps {
+  src: string;
+  alt: string;
+  fallbackSrc?: string;
+}
+
+// ❌ Mauvais
+interface Props {
+  src: string;
+  alt: string;
+}
+```
+
+### 🔧 Refactoring Guidelines
+
+#### Quand Refactorer
+
+- Composant > 200 lignes
+- Plus de 5 props
+- Logique métier mélangée avec UI
+- Duplication de code
+
+#### Comment Refactorer
+
+1. **Extraire les sous-composants**
+
+```typescript
+// Avant
+function JerseyPage() {
+  return (
+    <div>
+      <Header />
+      <JerseyImage />
+      <JerseyStats />
+      <ShopSection />
+    </div>
+  );
+}
+
+// Après
+function JerseyPage() {
+  return (
+    <div>
+      <JerseyHeader />
+      <JerseyDisplay />
+      <JerseyMetrics />
+      <JerseyShop />
+    </div>
+  );
+}
+```
+
+2. **Extraire les hooks personnalisés**
+
+```typescript
+// ✅ Bon
+function useJerseyData(id: string) {
+  // Logique de récupération des données
+}
+
+function JerseyPage({ id }: { id: string }) {
+  const { jersey, loading, error } = useJerseyData(id);
+  // UI seulement
+}
+```
+
+3. **Extraire les utilitaires**
+
+```typescript
+// utils/jersey.ts
+export function getJerseyImage(jerseyId: string): string {
+  // Logique de mapping des images
+}
+
+// Composant
+import { getJerseyImage } from "@/utils/jersey";
+```
+
+### 🧪 Tests et Qualité
+
+#### Structure des Tests
+
+```
+src/
+├── components/
+│   └── JerseyImage/
+│       ├── JerseyImage.tsx
+│       ├── JerseyImage.test.tsx
+│       └── index.ts
+```
+
+#### Règles de Test
+
+- Un test par composant
+- Tester les props principales
+- Tester les cas d'erreur
+- Tester l'accessibilité
+
+### 📦 Gestion des Dépendances
+
+#### Installation
+
+```bash
+# Composants UI
+npx shadcn@latest add [component-name]
+
+# Dépendances métier
+npm install [package-name]
+```
+
+#### Vérification
+
+```bash
+# Vérifier les dépendances inutilisées
+npm run lint
+
+# Vérifier la taille du bundle
+npm run build
+```
+
+### 🚀 Déploiement
+
+#### Préparation
 
 ```bash
 # Générer le client Prisma
 npx prisma generate
 
-# Créer une migration
-npx prisma migrate dev --name <nom-migration>
+# Build de production
+npm run build
 
-# Voir la base de données
-npx prisma studio
-
-# Reset de la base de données
-npx prisma migrate reset
+# Test local
+npm run start
 ```
 
-## 🎯 Utilisation
+#### Vercel
 
-1. **Créer un utilisateur** : Entrez une adresse wallet
-2. **Créer un maillot** : Entrez l'ID et le nom du maillot
-3. **Enregistrer un scan** : Sélectionnez un utilisateur et un maillot
-4. **Voir les données** : Les listes se mettent à jour automatiquement
+- Build command : `npm run build`
+- Output directory : `.next`
+- Install command : `npm install`
 
-## 🔮 Prochaines étapes
+### 🔍 Monitoring et Maintenance
 
-- [ ] Ajouter l'authentification
-- [ ] Implémenter les concours et gains
-- [ ] Ajouter des statistiques
-- [ ] Interface mobile responsive
-- [ ] API REST pour intégration externe
+#### Métriques à Surveiller
 
-## 📝 Notes
+- Taille des composants (< 200 lignes)
+- Nombre de props par composant (< 8)
+- Duplication de code
+- Performance des images
 
-- La base de données SQLite est stockée dans `prisma/dev.db`
-- Les Server Actions sont utilisées pour toutes les opérations CRUD
-- L'interface utilise Tailwind CSS et shadcn/ui pour un design moderne
-- Le projet est prêt pour la production avec Next.js 15
+#### Outils Recommandés
+
+- ESLint pour la qualité du code
+- Prettier pour le formatage
+- TypeScript pour la sécurité des types
+- Lighthouse pour les performances
+
+### 📝 Exemples de Refactoring
+
+#### Exemple 1 : Composant Trop Gros
+
+```typescript
+// ❌ Avant - 300+ lignes
+function JerseyPage() {
+  // Logique de récupération
+  // Logique de formatage
+  // Logique d'affichage
+  // Logique d'actions
+  return <div>...</div>;
+}
+
+// ✅ Après - Composants séparés
+function JerseyPage() {
+  return (
+    <div>
+      <JerseyHeader />
+      <JerseyContent />
+      <JerseyActions />
+    </div>
+  );
+}
+```
+
+#### Exemple 2 : Props Trop Nombreuses
+
+```typescript
+// ❌ Avant - Trop de props
+function JerseyCard({
+  id, name, image, price, description,
+  onBuy, onFavorite, onShare, ...
+}: JerseyCardProps) {
+  // ...
+}
+
+// ✅ Après - Props groupées
+function JerseyCard({
+  jersey,
+  actions
+}: {
+  jersey: Jersey;
+  actions: JerseyActions;
+}) {
+  // ...
+}
+```
+
+## 🎯 Objectifs de Qualité
+
+- **Maintenabilité** : Code facile à comprendre et modifier
+- **Réutilisabilité** : Composants modulaires et réutilisables
+- **Performance** : Chargement rapide et optimisation des images
+- **Accessibilité** : Support des lecteurs d'écran et navigation clavier
+- **Responsive** : Fonctionne sur tous les appareils
+
+## 📞 Support
+
+Pour toute question sur l'architecture ou les bonnes pratiques, consulter ce README en premier.
