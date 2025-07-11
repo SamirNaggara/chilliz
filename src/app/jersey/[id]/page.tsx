@@ -8,6 +8,7 @@ import { JerseyLightbox } from "@/components/JerseyLightbox";
 import { ShopImage } from "@/components/ShopImage";
 import { JerseyWalletConnector } from "@/components/JerseyWalletConnector";
 import { WalletPriceDisplay } from "@/components/WalletPriceDisplay";
+import { PsgTokenDisplay } from "@/components/PsgTokenDisplay";
 import {
   Shield,
   Zap,
@@ -76,20 +77,36 @@ export default async function JerseyPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-blue-50">
-      {/* Header avec authentification */}
+      {/* Header avec authentification et infos PSG */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-red-600 to-blue-600 rounded-full flex items-center justify-center">
-                <Shield className="w-4 h-4 text-white" />
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gradient-to-r from-red-600 to-blue-600 rounded-full flex items-center justify-center">
+                  <Shield className="w-4 h-4 text-white" />
+                </div>
+                <span className="font-bold text-lg text-gray-800">
+                  PSG Authentic
+                </span>
               </div>
-              <span className="font-bold text-lg text-gray-800">
-                PSG Authentic
-              </span>
+              
+              {/* Séparateur vertical */}
+              <div className="hidden md:block w-px h-6 bg-gray-300"></div>
+              
+              {/* Nom du jersey dans la barre sticky */}
+              <div className="hidden md:flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-600">
+                  {jersey.name}
+                </span>
+              </div>
             </div>
 
             <div className="flex items-center gap-3">
+              {/* Composant PSG tokens compact pour la barre sticky */}
+              <div className="hidden lg:block">
+                <JerseyWalletConnector variant="compact" />
+              </div>
               <JerseyWalletConnector variant="header" />
             </div>
           </div>
@@ -141,11 +158,16 @@ export default async function JerseyPage({
           </div>
 
           {/* Informations du maillot */}
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-800 mb-4">
               {jersey.name}
             </h1>
-            <p className="text-gray-600 text-lg">Collection Officielle PSG</p>
+            <p className="text-gray-600 text-lg mb-6">Collection Officielle PSG</p>
+          </div>
+
+          {/* Affichage des tokens PSG */}
+          <div className="mb-12">
+            <PsgTokenDisplay />
           </div>
 
           {/* Stats gamifiées */}

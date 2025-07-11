@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { formatAddress, detectMetaMask } from "@/lib/web3";
-import { Zap, Coins, CheckCircle, AlertCircle } from "lucide-react";
+import { useWeb3 } from "@/hooks/useWeb3";
+import { Zap, Coins, CheckCircle, AlertCircle, Trophy } from "lucide-react";
 
 interface JerseyWalletConnectorProps {
-  variant?: "header" | "banner";
+  variant?: "header" | "banner" | "compact";
 }
 
 export function JerseyWalletConnector({ 
@@ -16,6 +18,12 @@ export function JerseyWalletConnector({
   const { address, isConnected } = useAccount();
   const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
+  const { 
+    hasEnoughPsgTokens, 
+    psgDiscountPercentage, 
+    psgTokenBalance,
+    disconnectWallet 
+  } = useWeb3();
 
   const [metaMaskInfo, setMetaMaskInfo] = useState({
     isInstalled: false,
@@ -35,6 +43,35 @@ export function JerseyWalletConnector({
     }
   };
 
+  const handleDisconnect = () => {
+    disconnectWallet(); // Utiliser notre fonction personnalisée
+    disconnect();
+  };
+
+  // Style compact pour la sticky bar
+  if (variant === "compact") {
+    if (isConnected && address) {
+      return (
+        <div className="flex items-center gap-2">
+          {psgTokenBalance !== null && (
+            <div className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded-md text-xs">
+              <Coins className="w-3 h-3" />
+              <span className="font-mono font-medium">
+                {Number(psgTokenBalance.balance / BigInt(10 ** psgTokenBalance.decimals)).toLocaleString()} {psgTokenBalance.symbol}
+              </span>
+              {hasEnoughPsgTokens && (
+                <Badge variant="secondary" className="bg-green-100 text-green-700 text-xs px-1 py-0 ml-1">
+                  -{psgDiscountPercentage}%
+                </Badge>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    }
+    return null; // Pas d'affichage compact si pas connecté
+  }
+
   // Style pour le header
   if (variant === "header") {
     if (isConnected && address) {
@@ -44,9 +81,15 @@ export function JerseyWalletConnector({
             <CheckCircle className="w-4 h-4" />
             <span className="font-medium">Connecté</span>
             <span className="font-mono">{formatAddress(address)}</span>
+            {hasEnoughPsgTokens && (
+              <Badge variant="secondary" className="bg-blue-100 text-blue-700 ml-2">
+                <Trophy className="w-3 h-3 mr-1" />
+                PSG -{psgDiscountPercentage}%
+              </Badge>
+            )}
           </div>
           <Button
-            onClick={() => disconnect()}
+            onClick={handleDisconnect}
             variant="outline"
             size="sm"
             className="text-red-600 border-red-200 hover:bg-red-50"
