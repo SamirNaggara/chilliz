@@ -1,6 +1,6 @@
 # 🏆 POC Chilliz - Gestion des Maillots
 
-Un projet Next.js avec Prisma SQLite pour gérer les utilisateurs, maillots et scans.
+Un projet Next.js avec Prisma SQLite et intégration Web3 pour gérer les utilisateurs, maillots et scans avec support de wallet Ethereum/Chiliz.
 
 ## 🚀 Technologies utilisées
 
@@ -10,14 +10,27 @@ Un projet Next.js avec Prisma SQLite pour gérer les utilisateurs, maillots et s
 - **Tailwind CSS** pour le styling
 - **shadcn/ui** pour les composants UI
 - **Server Actions** pour le backend
+- **Wagmi + Viem** pour l'intégration Web3
+- **Ethers.js** pour les interactions blockchain
+- **RainbowKit** pour la connexion wallet
+- **TanStack Query** pour la gestion d'état
 
 ## 📋 Fonctionnalités
 
+### Base de données
 - ✅ Création d'utilisateurs avec adresse wallet
 - ✅ Création de maillots avec ID et nom
 - ✅ Enregistrement de scans (utilisateur + maillot)
 - ✅ Affichage des données en temps réel
 - ✅ Interface moderne avec shadcn/ui
+
+### Web3 / Blockchain
+- ✅ Connexion MetaMask et autres wallets
+- ✅ Support multi-chaînes (Ethereum, Polygon, Arbitrum, Chiliz)
+- ✅ Affichage du solde et informations wallet
+- ✅ Gestion des erreurs Web3
+- ✅ Hooks React personnalisés pour Web3
+- ✅ Utilitaires Chiliz Chain
 
 ## 🗄️ Modèle de données
 
@@ -60,11 +73,50 @@ Un projet Next.js avec Prisma SQLite pour gérer les utilisateurs, maillots et s
 
 ## 🛠️ Installation
 
-1. **Cloner le projet**
+### Prérequis
+- Node.js 18+ 
+- npm ou yarn
+- MetaMask ou autre wallet compatible
+
+### 1. Cloner le projet
 
 ```bash
 git clone <repository-url>
 cd poc-chilliz
+```
+
+### 2. Installer les dépendances
+
+```bash
+npm install
+```
+
+### 3. Configurer les variables d'environnement
+
+```bash
+cp .env.example .env.local
+```
+
+Éditez `.env.local` et ajoutez votre Project ID WalletConnect (voir GUIDE_WEB3.md)
+
+### 4. Initialiser la base de données
+
+```bash
+npm run db:migrate
+```
+
+### 5. Démarrer en développement
+
+```bash
+npm run dev
+```
+
+### 6. Configurer MetaMask
+
+Suivez le guide complet dans `GUIDE_WEB3.md` pour :
+- Installer MetaMask
+- Ajouter les réseaux Chiliz
+- Configurer les wallets de test
 ```
 
 2. **Installer les dépendances**
