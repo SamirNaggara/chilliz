@@ -3,6 +3,8 @@ import { CreateUserForm } from "@/components/CreateUserForm";
 import { CreateJerseyForm } from "@/components/CreateJerseyForm";
 import { CreateScanForm } from "@/components/CreateScanForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default async function Home() {
   const usersResult = await getUsers();
@@ -86,13 +88,25 @@ export default async function Home() {
             {jerseysResult.success ? (
               <div className="space-y-2">
                 {jerseys.map((jersey) => (
-                  <div key={jersey.id} className="p-3 border rounded">
-                    <p className="font-medium">ID: {jersey.id}</p>
-                    <p className="text-sm">Nom: {jersey.name}</p>
-                    <p className="text-sm text-gray-600">
-                      Scans: {jersey.scans.length} | Créé:{" "}
-                      {jersey.createdAt.toLocaleDateString()}
-                    </p>
+                  <div
+                    key={jersey.id}
+                    className="p-3 border rounded hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <p className="font-medium">ID: {jersey.id}</p>
+                        <p className="text-sm">Nom: {jersey.name}</p>
+                        <p className="text-sm text-gray-600">
+                          Scans: {jersey.scans.length} | Créé:{" "}
+                          {jersey.createdAt.toLocaleDateString()}
+                        </p>
+                      </div>
+                      <Link href={`/jersey/${jersey.id}`}>
+                        <Button variant="outline" size="sm">
+                          Voir détails
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 ))}
               </div>
