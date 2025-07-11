@@ -129,7 +129,7 @@ export function JerseyWalletConnector({
             <Button
               onClick={() => disconnect()}
               variant="outline"
-              className="border-white text-white hover:bg-white/10"
+              className="border-white text-white hover:bg-white hover:text-green-600 transition-colors"
             >
               Déconnecter
             </Button>
