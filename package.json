@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "echo 'DATABASE_URL='$DATABASE_URL && prisma generate && prisma db push && next build",
+    "build": "echo 'DATABASE_URL_PG='$DATABASE_URL_PG && prisma generate && prisma db push && next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
