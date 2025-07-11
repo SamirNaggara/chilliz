@@ -16,7 +16,6 @@ datasource db {
 model Jersey {
   id           String        @id // Peut être égal à l'ID "physique" inscrit dans la puce (ex: UUID, ou "jersey-1")
   name         String        // Nom ou description (ex: "Maillot Mbappé Home 2024")
-  cooldownUntil DateTime?    // Nouveau champ pour le système de cooldown
   createdAt    DateTime      @default(now())
   scans        Scan[]
   participations Participation[]
@@ -52,6 +51,7 @@ model Participation {
   jersey      Jersey   @relation(fields: [jerseyId], references: [id])
   jerseyId    String
   walletAddress String  // Adresse wallet du participant
+  username    String?  // Nom d'utilisateur du participant
   participatedAt DateTime @default(now())
   
   @@unique([contestId, walletAddress, jerseyId], name: "contest_wallet_jersey_unique")

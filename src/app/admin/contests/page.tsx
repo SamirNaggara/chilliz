@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Trophy, Users } from "lucide-react";
 import { CreateContestForm } from "@/components/contest/CreateContestForm";
+import Link from "next/link";
 
 export default async function AdminContestsPage() {
   const contests = await prisma.contest.findMany({
@@ -145,9 +146,11 @@ export default async function AdminContestsPage() {
                         )}
 
                         <div className="flex gap-2">
-                          <Button size="sm" variant="outline">
-                            Voir Détails
-                          </Button>
+                          <Link href={`/admin/contests/${contest.id}`}>
+                            <Button size="sm" variant="outline">
+                              Voir Détails
+                            </Button>
+                          </Link>
                           {contest.status === "ACTIVE" && (
                             <Button
                               size="sm"

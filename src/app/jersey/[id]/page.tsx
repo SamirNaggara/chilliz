@@ -1,25 +1,17 @@
-import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 import { JerseyHeader } from "@/components/jersey/JerseyHeader";
 import { JerseyHero } from "@/components/jersey/JerseyHero";
 import { JerseyStats } from "@/components/jersey/JerseyStats";
 import { JerseyContestParticipation } from "@/components/contest/JerseyContestParticipation";
+import { ContestPopupWrapper } from "@/components/contest/ContestPopupWrapper";
 import { ShopSection } from "@/components/shop/ShopSection";
 import { JerseyFooter } from "@/components/jersey/JerseyFooter";
+import { getJerseyImage } from "@/lib/utils";
 
 interface JerseyPageProps {
-  params: Promise<{
-    id: string;
-  }>;
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
-}
-
-// Fonction pour déterminer l'image du maillot selon l'id
-function getJerseyImage(jersey: { id: string; image?: string }): string {
-  // Si un champ image existe en BDD, on l'utilise
-  if (jersey.image) return jersey.image;
-  // Sinon, on génère dynamiquement à partir de l'id
-  return `/jerseys/${jersey.id}.png`;
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ isAuth?: string }>;
 }
 
 export default async function JerseyPage({
@@ -83,6 +75,13 @@ export default async function JerseyPage({
       </div>
       <ShopSection />
       <JerseyFooter />
+
+      {/* Popup de concours */}
+      <ContestPopupWrapper
+        contest={activeContest}
+        isAuthentic={isAuth}
+        jerseyId={jersey.id}
+      />
     </div>
   );
 }

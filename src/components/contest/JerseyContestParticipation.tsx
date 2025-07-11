@@ -1,17 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Trophy,
-  Wallet,
-  CheckCircle,
-  XCircle,
-  Clock,
-  Gift,
-} from "lucide-react";
-import { participateInContest } from "@/lib/actions";
+import { Trophy, CheckCircle, Clock, Gift } from "lucide-react";
+import { participateInContest, checkParticipation } from "@/lib/actions";
+import { useAccount } from "wagmi";
 
 interface Contest {
   id: string;
@@ -39,6 +33,38 @@ export function JerseyContestParticipation({
     message: string;
   } | null>(null);
   const [walletAddress, setWalletAddress] = useState("");
+  const [username, setUsername] = useState("");
+  const [hasParticipated, setHasParticipated] = useState(false);
+  const [isCheckingParticipation, setIsCheckingParticipation] = useState(false);
+  const { address, isConnected } = useAccount();
+
+  // Vérifier la participation quand l'utilisateur se connecte
+  useEffect(() => {
+    if (isConnected && address && activeContest) {
+      checkUserParticipation();
+    }
+  }, [isConnected, address, activeContest]);
+
+  const checkUserParticipation = async () => {
+    if (!address || !activeContest) return;
+
+    setIsCheckingParticipation(true);
+    try {
+      const response = await checkParticipation(
+        activeContest.id,
+        jerseyId,
+        address
+      );
+
+      if (response.success) {
+        setHasParticipated(response.hasParticipated || false);
+      }
+    } catch (error) {
+      console.error("Erreur vérification participation:", error);
+    } finally {
+      setIsCheckingParticipation(false);
+    }
+  };
 
   const handleParticipation = async () => {
     if (!activeContest) {
@@ -56,6 +82,13 @@ export function JerseyContestParticipation({
       });
       return;
     }
+    if (!username.trim()) {
+      setResult({
+        success: false,
+        message: "Veuillez entrer un nom d'utilisateur",
+      });
+      return;
+    }
 
     setIsLoading(true);
     setResult(null);
@@ -64,7 +97,8 @@ export function JerseyContestParticipation({
       const response = await participateInContest(
         activeContest.id,
         jerseyId,
-        walletAddress.trim()
+        walletAddress.trim(),
+        username.trim()
       );
 
       if (response.success) {
@@ -73,6 +107,7 @@ export function JerseyContestParticipation({
           message: "Participation enregistrée avec succès !",
         });
         setWalletAddress("");
+        setHasParticipated(true);
       } else {
         setResult({
           success: false,
@@ -190,63 +225,98 @@ export function JerseyContestParticipation({
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <label
-              htmlFor="wallet"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Adresse Wallet
-            </label>
-            <input
-              id="wallet"
-              type="text"
-              value={walletAddress}
-              onChange={(e) => setWalletAddress(e.target.value)}
-              placeholder="0x1234...5678"
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            />
-          </div>
-
-          <Button
-            onClick={handleParticipation}
-            disabled={isLoading || !walletAddress.trim()}
-            className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-semibold"
-          >
-            {isLoading ? (
-              <>
-                <Clock className="w-4 h-4 mr-2 animate-spin" />
-                Participation en cours...
-              </>
-            ) : (
-              <>
-                <Wallet className="w-4 h-4 mr-2" />
-                Participer avec mon wallet
-              </>
-            )}
-          </Button>
-
-          {result && (
-            <div
-              className={`p-4 rounded-lg border ${
-                result.success
-                  ? "bg-green-50 border-green-200 text-green-800"
-                  : "bg-red-50 border-red-200 text-red-800"
-              }`}
-            >
-              <div className="flex items-start gap-2">
-                {result.success ? (
-                  <CheckCircle className="w-5 h-5 mt-0.5 text-green-600" />
-                ) : (
-                  <XCircle className="w-5 h-5 mt-0.5 text-red-600" />
-                )}
-                <div className="flex-1">
-                  <p className="font-medium">{result.message}</p>
-                </div>
+        {/* Affichage selon l'état de participation */}
+        {isConnected && address && (
+          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+            {isCheckingParticipation ? (
+              <p className="text-blue-700">
+                Vérification de votre participation...
+              </p>
+            ) : hasParticipated ? (
+              <div className="flex items-center gap-2 text-green-700">
+                <CheckCircle className="w-5 h-5" />
+                <span className="font-semibold">
+                  Vous avez déjà participé à ce concours ! 🎉
+                </span>
               </div>
-            </div>
-          )}
-        </div>
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="username"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Nom d&apos;utilisateur (affiché si vous gagnez)
+                  </label>
+                  <input
+                    id="username"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="ex: SamPSG"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent mb-4"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="wallet"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Adresse Wallet
+                  </label>
+                  <input
+                    id="wallet"
+                    type="text"
+                    value={walletAddress}
+                    onChange={(e) => setWalletAddress(e.target.value)}
+                    placeholder="0x1234...5678"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  />
+                </div>
+
+                <Button
+                  onClick={handleParticipation}
+                  disabled={
+                    isLoading || !walletAddress.trim() || !username.trim()
+                  }
+                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold"
+                >
+                  {isLoading ? (
+                    <>
+                      <span className="animate-spin mr-2">⏳</span>
+                      Participation en cours...
+                    </>
+                  ) : (
+                    <>
+                      <Trophy className="w-4 h-4 mr-2" />
+                      Participer au Concours
+                    </>
+                  )}
+                </Button>
+
+                {result && (
+                  <div
+                    className={`p-3 rounded-lg text-sm ${
+                      result.success
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {result.message}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {!isConnected && (
+          <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+            <p className="text-orange-700">
+              Connectez-vous à votre wallet pour participer au concours.
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -75,7 +75,8 @@ export async function getContests() {
 export async function participateInContest(
   contestId: string,
   jerseyId: string,
-  walletAddress: string
+  walletAddress: string,
+  username?: string
 ) {
   try {
     // Vérifier si l'utilisateur a déjà participé avec ce maillot
@@ -102,6 +103,7 @@ export async function participateInContest(
         contestId,
         jerseyId,
         walletAddress,
+        username,
       },
     });
 
@@ -112,6 +114,36 @@ export async function participateInContest(
     return {
       success: false,
       error: "Erreur lors de la participation",
+    };
+  }
+}
+
+export async function checkParticipation(
+  contestId: string,
+  jerseyId: string,
+  walletAddress: string
+) {
+  try {
+    const participation = await prisma.participation.findUnique({
+      where: {
+        contest_wallet_jersey_unique: {
+          contestId,
+          walletAddress,
+          jerseyId,
+        },
+      },
+    });
+
+    return {
+      success: true,
+      hasParticipated: !!participation,
+      participation,
+    };
+  } catch (error) {
+    console.error("Erreur vérification participation:", error);
+    return {
+      success: false,
+      error: "Erreur lors de la vérification de la participation",
     };
   }
 }
