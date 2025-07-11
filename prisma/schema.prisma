@@ -13,43 +13,61 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-model User {
-  id        String   @id @default(cuid())
-  wallet    String   @unique
-  scans     Scan[]
-  winners   Winner[]
-  createdAt DateTime @default(now())
-}
-
 model Jersey {
-  id        String   @id // Peut être égal à l'ID "physique" inscrit dans la puce (ex: UUID, ou "jersey-1")
-  name      String   // Nom ou description (ex: "Maillot Mbappé Home 2024")
-  createdAt DateTime @default(now())
-  scans     Scan[]
+  id           String        @id // Peut être égal à l'ID "physique" inscrit dans la puce (ex: UUID, ou "jersey-1")
+  name         String        // Nom ou description (ex: "Maillot Mbappé Home 2024")
+  cooldownUntil DateTime?    // Nouveau champ pour le système de cooldown
+  createdAt    DateTime      @default(now())
+  scans        Scan[]
+  participations Participation[]
 }
 
 model Scan {
   id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
+  walletAddress String  // Adresse wallet du scanner
   jersey    Jersey   @relation(fields: [jerseyId], references: [id])
   jerseyId  String
   scannedAt DateTime @default(now())
 }
 
 model Contest {
-  id         String    @id @default(cuid())
-  startedAt  DateTime
-  endedAt    DateTime?
-  winners    Winner[]
-  createdAt  DateTime  @default(now())
+  id          String        @id @default(cuid())
+  name        String        // Nom du concours (ex: "Concours But Mbappé")
+  description String?       // Description optionnelle
+  startedAt   DateTime      // Heure de début du concours
+  endedAt     DateTime?     // Heure de fin du concours (choisie par l'admin)
+  prize       String        // Description du prix (ex: "1000 CHZ + Maillot Collector")
+  maxWinners  Int          @default(3) // Nombre de gagnants
+  status      ContestStatus @default(ACTIVE) // Statut du concours
+  participations Participation[]
+  winners     Winner[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Participation {
+  id          String   @id @default(cuid())
+  contest     Contest  @relation(fields: [contestId], references: [id])
+  contestId   String
+  jersey      Jersey   @relation(fields: [jerseyId], references: [id])
+  jerseyId    String
+  walletAddress String  // Adresse wallet du participant
+  participatedAt DateTime @default(now())
+  
+  @@unique([contestId, walletAddress, jerseyId], name: "contest_wallet_jersey_unique")
 }
 
 model Winner {
   id        String   @id @default(cuid())
   contest   Contest  @relation(fields: [contestId], references: [id])
   contestId String
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
+  walletAddress String  // Adresse wallet du gagnant
   prize     String   // Description du prix gagné (ex: "10 $PSG Fan Tokens")
+  wonAt     DateTime @default(now())
+}
+
+enum ContestStatus {
+  ACTIVE    // Concours en cours
+  FINISHED  // Concours terminé
+  CANCELLED // Concours annulé
 }

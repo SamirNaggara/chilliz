@@ -5,23 +5,6 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Seeding database...");
 
-  // Créer quelques utilisateurs d'exemple
-  const user1 = await prisma.user.upsert({
-    where: { wallet: "0x1234567890abcdef" },
-    update: {},
-    create: {
-      wallet: "0x1234567890abcdef",
-    },
-  });
-
-  const user2 = await prisma.user.upsert({
-    where: { wallet: "0xabcdef1234567890" },
-    update: {},
-    create: {
-      wallet: "0xabcdef1234567890",
-    },
-  });
-
   // Créer quelques maillots d'exemple
   const jersey1 = await prisma.jersey.upsert({
     where: { id: "jersey-mbappe-2024" },
@@ -47,7 +30,7 @@ async function main() {
     update: {},
     create: {
       id: "scan-1",
-      userId: user1.id,
+      walletAddress: "0x1234567890abcdef",
       jerseyId: jersey1.id,
     },
   });
@@ -57,14 +40,16 @@ async function main() {
     update: {},
     create: {
       id: "scan-2",
-      userId: user2.id,
+      walletAddress: "0xabcdef1234567890",
       jerseyId: jersey2.id,
     },
   });
 
   console.log("✅ Database seeded successfully!");
-  console.log("👥 Users created:", user1.wallet, user2.wallet);
   console.log("👕 Jerseys created:", jersey1.name, jersey2.name);
+  console.log(
+    "📱 Sample wallet addresses: 0x1234567890abcdef, 0xabcdef1234567890"
+  );
 }
 
 main()

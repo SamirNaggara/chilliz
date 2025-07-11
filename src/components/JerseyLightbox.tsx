@@ -1,8 +1,6 @@
 "use client";
-import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
-import { X } from "lucide-react";
-import { JerseyImage } from "@/components/JerseyImage";
 import { useState } from "react";
+import { X } from "lucide-react";
 
 interface JerseyLightboxProps {
   src: string;
@@ -17,23 +15,41 @@ export function JerseyLightbox({
   fallbackSrc,
   trigger,
 }: JerseyLightboxProps) {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [imgSrc, setImgSrc] = useState(src);
+  const [hasError, setHasError] = useState(false);
+
+  const handleError = () => {
+    if (!hasError) {
+      setImgSrc(fallbackSrc);
+      setHasError(true);
+    }
+  };
 
   return (
     <>
-      <div onClick={() => setOpen(true)} className="cursor-zoom-in">
+      <div onClick={() => setIsOpen(true)} className="cursor-pointer">
         {trigger}
       </div>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-3xl bg-black/90 p-0 flex flex-col items-center justify-center">
-          <DialogClose className="absolute top-4 right-4 text-white hover:text-red-500">
-            <X className="w-8 h-8" />
-          </DialogClose>
-          <div className="w-full h-full flex items-center justify-center p-4">
-            <JerseyImage src={src} alt={alt} fallbackSrc={fallbackSrc} />
+
+      {isOpen && (
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+          <div className="relative max-w-4xl max-h-full">
+            <button
+              onClick={() => setIsOpen(false)}
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <img
+              src={imgSrc}
+              alt={alt}
+              className="max-w-full max-h-full object-contain rounded-lg"
+              onError={handleError}
+            />
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
     </>
   );
 }

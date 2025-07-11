@@ -1,15 +1,20 @@
 "use client";
-
-import Image from "next/image";
 import { useState } from "react";
+import Image from "next/image";
 
 interface JerseyImageProps {
   src: string;
   alt: string;
   fallbackSrc: string;
+  className?: string;
 }
 
-export function JerseyImage({ src, alt, fallbackSrc }: JerseyImageProps) {
+export function JerseyImage({
+  src,
+  alt,
+  fallbackSrc,
+  className = "",
+}: JerseyImageProps) {
   const [imgSrc, setImgSrc] = useState(src);
   const [hasError, setHasError] = useState(false);
 
@@ -21,14 +26,14 @@ export function JerseyImage({ src, alt, fallbackSrc }: JerseyImageProps) {
   };
 
   return (
-    <div className="relative aspect-square w-full max-w-md mx-auto">
+    <div className={`relative w-full h-full ${className}`}>
       <Image
         src={imgSrc}
         alt={alt}
         fill
-        className="object-contain rounded-lg"
-        priority
+        className="object-contain rounded-2xl"
         onError={handleError}
+        priority
       />
     </div>
   );

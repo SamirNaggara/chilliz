@@ -3,24 +3,6 @@
 import { prisma } from "./prisma";
 import { revalidatePath } from "next/cache";
 
-export async function createUser(wallet: string) {
-  try {
-    const user = await prisma.user.create({
-      data: {
-        wallet,
-      },
-    });
-    revalidatePath("/");
-    return { success: true, user };
-  } catch (error) {
-    console.error("Erreur création utilisateur:", error);
-    return {
-      success: false,
-      error: "Erreur lors de la création de l'utilisateur",
-    };
-  }
-}
-
 export async function createJersey(id: string, name: string) {
   try {
     const jersey = await prisma.jersey.create({
@@ -37,15 +19,14 @@ export async function createJersey(id: string, name: string) {
   }
 }
 
-export async function createScan(userId: string, jerseyId: string) {
+export async function createScan(walletAddress: string, jerseyId: string) {
   try {
     const scan = await prisma.scan.create({
       data: {
-        userId,
+        walletAddress,
         jerseyId,
       },
       include: {
-        user: true,
         jersey: true,
       },
     });
@@ -57,36 +38,11 @@ export async function createScan(userId: string, jerseyId: string) {
   }
 }
 
-export async function getUsers() {
-  try {
-    const users = await prisma.user.findMany({
-      include: {
-        scans: {
-          include: {
-            jersey: true,
-          },
-        },
-      },
-    });
-    return { success: true, users };
-  } catch (error) {
-    console.error("Erreur récupération utilisateurs:", error);
-    return {
-      success: false,
-      error: "Erreur lors de la récupération des utilisateurs",
-    };
-  }
-}
-
 export async function getJerseys() {
   try {
     const jerseys = await prisma.jersey.findMany({
       include: {
-        scans: {
-          include: {
-            user: true,
-          },
-        },
+        scans: true,
       },
     });
     return { success: true, jerseys };
@@ -95,6 +51,67 @@ export async function getJerseys() {
     return {
       success: false,
       error: "Erreur lors de la récupération des maillots",
+    };
+  }
+}
+
+export async function getContests() {
+  try {
+    const contests = await prisma.contest.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return { success: true, contests };
+  } catch (error) {
+    console.error("Erreur récupération concours:", error);
+    return {
+      success: false,
+      error: "Erreur lors de la récupération des concours",
+    };
+  }
+}
+
+export async function participateInContest(
+  contestId: string,
+  jerseyId: string,
+  walletAddress: string
+) {
+  try {
+    // Vérifier si l'utilisateur a déjà participé avec ce maillot
+    const existingParticipation = await prisma.participation.findUnique({
+      where: {
+        contest_wallet_jersey_unique: {
+          contestId,
+          walletAddress,
+          jerseyId,
+        },
+      },
+    });
+
+    if (existingParticipation) {
+      return {
+        success: false,
+        error: "Vous avez déjà participé avec ce maillot",
+      };
+    }
+
+    // Créer la participation
+    const participation = await prisma.participation.create({
+      data: {
+        contestId,
+        jerseyId,
+        walletAddress,
+      },
+    });
+
+    revalidatePath("/");
+    return { success: true, participation };
+  } catch (error) {
+    console.error("Erreur lors de la participation:", error);
+    return {
+      success: false,
+      error: "Erreur lors de la participation",
     };
   }
 }
