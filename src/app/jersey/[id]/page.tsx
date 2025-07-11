@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { JerseyHeader } from "@/components/jersey/JerseyHeader";
 import { JerseyHero } from "@/components/jersey/JerseyHero";
-import { JerseyStats } from "@/components/jersey/JerseyStats";
 import { JerseyContestParticipation } from "@/components/contest/JerseyContestParticipation";
 import { ContestPopupWrapper } from "@/components/contest/ContestPopupWrapper";
 import { ShopSection } from "@/components/shop/ShopSection";
@@ -38,6 +37,7 @@ export default async function JerseyPage({
   const now = new Date();
   const activeContest = await prisma.contest.findFirst({
     where: {
+      status: "ACTIVE",
       startedAt: {
         lte: now,
       },
@@ -50,9 +50,6 @@ export default async function JerseyPage({
 
   // 2. Calculs simples
   const jerseyImage = getJerseyImage(jersey);
-  const totalScans = jersey.scans.length;
-  const uniqueUsers = new Set(jersey.scans.map((scan) => scan.walletAddress))
-    .size;
 
   // 3. Rendu avec composants
   return (
@@ -64,7 +61,6 @@ export default async function JerseyPage({
           jerseyImage={jerseyImage}
           isAuthentic={isAuth}
         />
-        <JerseyStats totalScans={totalScans} uniqueUsers={uniqueUsers} />
         <div className="mb-12">
           <JerseyContestParticipation
             jerseyId={jersey.id}

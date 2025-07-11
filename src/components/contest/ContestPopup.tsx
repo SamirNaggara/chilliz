@@ -239,7 +239,7 @@ export function ContestPopup({
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="ex: SamPSG"
+                    placeholder="ex: MbappéFan2024"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-gray-900"
                   />
                 </div>

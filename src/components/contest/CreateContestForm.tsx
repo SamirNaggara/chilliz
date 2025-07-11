@@ -3,9 +3,8 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Plus, Play, Pause } from "lucide-react";
+import { Plus, Play, Pause, Crown, Medal, Award } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface CreateContestFormProps {
@@ -21,8 +20,9 @@ export function CreateContestForm({ onSuccess }: CreateContestFormProps) {
     description: "",
     startTime: "",
     endTime: "",
-    prize: "",
-    maxWinners: 3,
+    firstPrize: "",
+    secondPrize: "",
+    thirdPrize: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,8 +51,9 @@ export function CreateContestForm({ onSuccess }: CreateContestFormProps) {
         description: "",
         startTime: "",
         endTime: "",
-        prize: "",
-        maxWinners: 3,
+        firstPrize: "",
+        secondPrize: "",
+        thirdPrize: "",
       });
 
       // Refresh the page to show the new contest
@@ -71,7 +72,7 @@ export function CreateContestForm({ onSuccess }: CreateContestFormProps) {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "maxWinners" ? parseInt(value) || 3 : value,
+      [name]: value,
     }));
   };
 
@@ -105,31 +106,16 @@ export function CreateContestForm({ onSuccess }: CreateContestFormProps) {
               />
             </div>
             <div>
-              <Label htmlFor="maxWinners">Nombre de Gagnants</Label>
+              <Label htmlFor="description">Description (optionnel)</Label>
               <Input
-                id="maxWinners"
-                name="maxWinners"
-                type="number"
-                value={formData.maxWinners}
+                id="description"
+                name="description"
+                value={formData.description}
                 onChange={handleInputChange}
-                min={1}
-                max={10}
+                placeholder="Description du concours..."
                 className="mt-1"
               />
             </div>
-          </div>
-
-          <div>
-            <Label htmlFor="description">Description (optionnel)</Label>
-            <Textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              placeholder="Description du concours..."
-              className="mt-1"
-              rows={3}
-            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -159,17 +145,69 @@ export function CreateContestForm({ onSuccess }: CreateContestFormProps) {
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="prize">Prix à Gagner *</Label>
-            <Input
-              id="prize"
-              name="prize"
-              value={formData.prize}
-              onChange={handleInputChange}
-              placeholder="Ex: 1000 CHZ + Maillot Collector"
-              className="mt-1"
-              required
-            />
+          {/* Section des 3 prix */}
+          <div className="space-y-4">
+            <Label className="text-base font-semibold">Prix à Gagner *</Label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label
+                  htmlFor="firstPrize"
+                  className="flex items-center gap-2 text-yellow-700"
+                >
+                  <Crown className="w-4 h-4" />
+                  1er Prix *
+                </Label>
+                <Input
+                  id="firstPrize"
+                  name="firstPrize"
+                  value={formData.firstPrize}
+                  onChange={handleInputChange}
+                  placeholder="Ex: 1000 CHZ + Maillot Collector"
+                  className="mt-1 border-yellow-300 focus:border-yellow-500"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="secondPrize"
+                  className="flex items-center gap-2 text-gray-700"
+                >
+                  <Medal className="w-4 h-4" />
+                  2ème Prix *
+                </Label>
+                <Input
+                  id="secondPrize"
+                  name="secondPrize"
+                  value={formData.secondPrize}
+                  onChange={handleInputChange}
+                  placeholder="Ex: 500 CHZ + Maillot"
+                  className="mt-1 border-gray-300 focus:border-gray-500"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="thirdPrize"
+                  className="flex items-center gap-2 text-orange-700"
+                >
+                  <Award className="w-4 h-4" />
+                  3ème Prix *
+                </Label>
+                <Input
+                  id="thirdPrize"
+                  name="thirdPrize"
+                  value={formData.thirdPrize}
+                  onChange={handleInputChange}
+                  placeholder="Ex: 250 CHZ"
+                  className="mt-1 border-orange-300 focus:border-orange-500"
+                  required
+                />
+              </div>
+            </div>
+            <p className="text-sm text-gray-600">
+              * Les 3 prix sont obligatoires. Le concours aura exactement 3
+              gagnants.
+            </p>
           </div>
 
           <div className="flex gap-4">

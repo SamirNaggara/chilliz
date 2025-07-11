@@ -2,8 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Trophy, Users } from "lucide-react";
+import { Calendar, Trophy, Users, Crown, Medal, Award } from "lucide-react";
 import { CreateContestForm } from "@/components/contest/CreateContestForm";
+import { FinishContestButton } from "@/components/contest/FinishContestButton";
 import Link from "next/link";
 
 export default async function AdminContestsPage() {
@@ -108,9 +109,29 @@ export default async function AdminContestsPage() {
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Trophy className="w-4 h-4" />
-                          <span>{contest.prize}</span>
+                        {/* Affichage des 3 prix */}
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-sm">
+                            <Trophy className="w-4 h-4" />
+                            <span className="font-semibold">Prix :</span>
+                          </div>
+                          <div className="grid grid-cols-1 gap-2 text-sm">
+                            <div className="flex items-center gap-2 text-yellow-700">
+                              <Crown className="w-3 h-3" />
+                              <span className="font-medium">1er :</span>
+                              <span>{contest.firstPrize}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-gray-700">
+                              <Medal className="w-3 h-3" />
+                              <span className="font-medium">2ème :</span>
+                              <span>{contest.secondPrize}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-orange-700">
+                              <Award className="w-3 h-3" />
+                              <span className="font-medium">3ème :</span>
+                              <span>{contest.thirdPrize}</span>
+                            </div>
+                          </div>
                         </div>
 
                         <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -152,13 +173,10 @@ export default async function AdminContestsPage() {
                             </Button>
                           </Link>
                           {contest.status === "ACTIVE" && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-orange-600"
-                            >
-                              Terminer Maintenant
-                            </Button>
+                            <FinishContestButton
+                              contestId={contest.id}
+                              contestName={contest.name}
+                            />
                           )}
                         </div>
                       </div>

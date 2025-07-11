@@ -14,6 +14,9 @@ interface Contest {
   prize: string;
   startedAt: Date;
   endedAt: Date | null;
+  firstPrize: string | null;
+  secondPrize: string | null;
+  thirdPrize: string | null;
 }
 
 interface JerseyContestParticipationProps {
@@ -190,6 +193,175 @@ export function JerseyContestParticipation({
     );
   }
 
+  if (isConnected && address && hasParticipated) {
+    return (
+      <div className="flex justify-center w-full mt-6">
+        <div className="bg-gradient-to-r from-green-50 to-yellow-50 border-2 border-green-200 rounded-xl p-5 flex flex-col items-center gap-4 shadow-md max-w-2xl w-full">
+          <div className="flex flex-col items-center w-full">
+            <div className="flex items-center gap-2 mb-2">
+              <CheckCircle className="w-6 h-6 text-green-600 animate-bounce" />
+              <span className="text-lg font-bold text-green-800">
+                Bravo, vous êtes en lice pour le tirage au sort ! 🎉
+              </span>
+            </div>
+            <p className="text-green-700 mb-2">
+              Votre participation est enregistrée. Bonne chance pour le tirage !
+            </p>
+            <p className="text-gray-700 text-sm mb-2">
+              Le tirage au sort aura lieu à la fin du concours. Voici les prix
+              que vous pouvez remporter&nbsp;:
+            </p>
+            <ul className="space-y-1 text-base">
+              <li className="flex items-center gap-2 text-yellow-700 font-semibold">
+                <span className="inline-block bg-yellow-200 rounded-full px-2 py-0.5 text-xs font-bold">
+                  1er
+                </span>
+                <span>{activeContest.firstPrize || "1er prix"}</span>
+              </li>
+              <li className="flex items-center gap-2 text-gray-700 font-semibold">
+                <span className="inline-block bg-gray-200 rounded-full px-2 py-0.5 text-xs font-bold">
+                  2e
+                </span>
+                <span>{activeContest.secondPrize || "2e prix"}</span>
+              </li>
+              <li className="flex items-center gap-2 text-orange-700 font-semibold">
+                <span className="inline-block bg-orange-200 rounded-full px-2 py-0.5 text-xs font-bold">
+                  3e
+                </span>
+                <span>{activeContest.thirdPrize || "3e prix"}</span>
+              </li>
+            </ul>
+            <p className="text-xs text-gray-500 mt-2">
+              Restez connecté, les gagnants seront annoncés ici même !
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  let mainContent = null;
+  if (isConnected && address) {
+    if (isCheckingParticipation) {
+      mainContent = (
+        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+          <p className="text-blue-700">
+            Vérification de votre participation...
+          </p>
+        </div>
+      );
+    } else if (hasParticipated) {
+      mainContent = (
+        <div className="bg-gradient-to-r from-green-50 to-yellow-50 border-2 border-green-200 rounded-xl p-5 flex flex-col items-center gap-4 shadow-md mt-2">
+          <div className="flex flex-col items-center w-full">
+            <div className="flex items-center gap-2 mb-2">
+              <CheckCircle className="w-6 h-6 text-green-600 animate-bounce" />
+              <span className="text-lg font-bold text-green-800">
+                Bravo, vous êtes en lice pour le tirage au sort ! 🎉
+              </span>
+            </div>
+            <p className="text-green-700 mb-2">
+              Votre participation est enregistrée. Bonne chance pour le tirage !
+            </p>
+            <p className="text-gray-700 text-sm mb-2">
+              Le tirage au sort aura lieu à la fin du concours. Voici les prix
+              que vous pouvez remporter&nbsp;:
+            </p>
+            <ul className="space-y-1 text-base">
+              <li className="flex items-center gap-2 text-yellow-700 font-semibold">
+                <span className="inline-block bg-yellow-200 rounded-full px-2 py-0.5 text-xs font-bold">
+                  1er
+                </span>
+                <span>{activeContest.firstPrize || "1er prix"}</span>
+              </li>
+              <li className="flex items-center gap-2 text-gray-700 font-semibold">
+                <span className="inline-block bg-gray-200 rounded-full px-2 py-0.5 text-xs font-bold">
+                  2e
+                </span>
+                <span>{activeContest.secondPrize || "2e prix"}</span>
+              </li>
+              <li className="flex items-center gap-2 text-orange-700 font-semibold">
+                <span className="inline-block bg-orange-200 rounded-full px-2 py-0.5 text-xs font-bold">
+                  3e
+                </span>
+                <span>{activeContest.thirdPrize || "3e prix"}</span>
+              </li>
+            </ul>
+            <p className="text-xs text-gray-500 mt-2">
+              Restez connecté, les gagnants seront annoncés ici même !
+            </p>
+          </div>
+        </div>
+      );
+    } else {
+      mainContent = (
+        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+          {/* ... formulaire de participation ... */}
+          <div>
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Nom d&apos;utilisateur (affiché si vous gagnez)
+            </label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="ex: SamPSG"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent mb-4"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="wallet"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Adresse Wallet
+            </label>
+            <input
+              id="wallet"
+              type="text"
+              value={walletAddress}
+              onChange={(e) => setWalletAddress(e.target.value)}
+              placeholder="0x1234...5678"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            />
+          </div>
+          <Button
+            onClick={handleParticipation}
+            disabled={isLoading || !walletAddress.trim() || !username.trim()}
+            className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold"
+          >
+            {isLoading ? (
+              <>
+                <span className="animate-spin mr-2">⏳</span>
+                Participation en cours...
+              </>
+            ) : (
+              <>
+                <Trophy className="w-4 h-4 mr-2" />
+                Participer au Concours
+              </>
+            )}
+          </Button>
+          {result && (
+            <div
+              className={`p-3 rounded-lg text-sm ${
+                result.success
+                  ? "bg-green-100 text-green-800"
+                  : "bg-red-100 text-red-800"
+              }`}
+            >
+              {result.message}
+            </div>
+          )}
+        </div>
+      );
+    }
+  }
+
   return (
     <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border-orange-200">
       <CardHeader>
@@ -212,104 +384,17 @@ export function JerseyContestParticipation({
             <p className="text-gray-600 mb-3">{activeContest.description}</p>
           )}
         </div>
-
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm">
             <Gift className="w-4 h-4 text-yellow-600" />
             <span className="font-medium">{activeContest.prize}</span>
           </div>
-
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Clock className="w-4 h-4" />
             <span>{formatTimeRemaining(activeContest.endedAt)}</span>
           </div>
         </div>
-
-        {/* Affichage selon l'état de participation */}
-        {isConnected && address && (
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-            {isCheckingParticipation ? (
-              <p className="text-blue-700">
-                Vérification de votre participation...
-              </p>
-            ) : hasParticipated ? (
-              <div className="flex items-center gap-2 text-green-700">
-                <CheckCircle className="w-5 h-5" />
-                <span className="font-semibold">
-                  Vous avez déjà participé à ce concours ! 🎉
-                </span>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="username"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Nom d&apos;utilisateur (affiché si vous gagnez)
-                  </label>
-                  <input
-                    id="username"
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="ex: SamPSG"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent mb-4"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="wallet"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Adresse Wallet
-                  </label>
-                  <input
-                    id="wallet"
-                    type="text"
-                    value={walletAddress}
-                    onChange={(e) => setWalletAddress(e.target.value)}
-                    placeholder="0x1234...5678"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-                </div>
-
-                <Button
-                  onClick={handleParticipation}
-                  disabled={
-                    isLoading || !walletAddress.trim() || !username.trim()
-                  }
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold"
-                >
-                  {isLoading ? (
-                    <>
-                      <span className="animate-spin mr-2">⏳</span>
-                      Participation en cours...
-                    </>
-                  ) : (
-                    <>
-                      <Trophy className="w-4 h-4 mr-2" />
-                      Participer au Concours
-                    </>
-                  )}
-                </Button>
-
-                {result && (
-                  <div
-                    className={`p-3 rounded-lg text-sm ${
-                      result.success
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {result.message}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
+        {mainContent}
         {!isConnected && (
           <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
             <p className="text-orange-700">

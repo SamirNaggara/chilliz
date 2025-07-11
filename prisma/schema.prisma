@@ -35,8 +35,10 @@ model Contest {
   description String?       // Description optionnelle
   startedAt   DateTime      // Heure de début du concours
   endedAt     DateTime?     // Heure de fin du concours (choisie par l'admin)
-  prize       String        // Description du prix (ex: "1000 CHZ + Maillot Collector")
-  maxWinners  Int          @default(3) // Nombre de gagnants
+  firstPrize  String        // Prix du 1er gagnant (ex: "1000 CHZ + Maillot Collector")
+  secondPrize String        // Prix du 2ème gagnant (ex: "500 CHZ + Maillot")
+  thirdPrize  String        // Prix du 3ème gagnant (ex: "250 CHZ")
+  maxWinners  Int          @default(3) // Nombre de gagnants (fixé à 3)
   status      ContestStatus @default(ACTIVE) // Statut du concours
   participations Participation[]
   winners     Winner[]

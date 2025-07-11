@@ -4,12 +4,30 @@ import { prisma } from "@/lib/prisma";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, description, startTime, endTime, prize, maxWinners } = body;
+    const {
+      name,
+      description,
+      startTime,
+      endTime,
+      firstPrize,
+      secondPrize,
+      thirdPrize,
+    } = body;
 
     // Validation des données
-    if (!name || !startTime || !endTime || !prize) {
+    if (
+      !name ||
+      !startTime ||
+      !endTime ||
+      !firstPrize ||
+      !secondPrize ||
+      !thirdPrize
+    ) {
       return NextResponse.json(
-        { error: "Tous les champs obligatoires doivent être remplis" },
+        {
+          error:
+            "Tous les champs obligatoires doivent être remplis (nom, dates et 3 prix)",
+        },
         { status: 400 }
       );
     }
@@ -45,8 +63,10 @@ export async function POST(request: NextRequest) {
         description: description || null,
         startedAt: startDate,
         endedAt: endDate,
-        prize,
-        maxWinners: maxWinners || 3,
+        firstPrize,
+        secondPrize,
+        thirdPrize,
+        maxWinners: 3, // Fixé à 3 gagnants
       },
     });
 

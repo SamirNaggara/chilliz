@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ContestPopup } from "./ContestPopup";
-import { participateInContest } from "@/lib/actions";
+import { participateInContest, checkParticipation } from "@/lib/actions";
 import { useAccount } from "wagmi";
 
 interface Contest {
@@ -34,6 +34,21 @@ export function ContestPopupWrapper({
   } | null>(null);
   const [username, setUsername] = useState("");
   const { address } = useAccount();
+  const [hasParticipated, setHasParticipated] = useState(false);
+
+  // Vérifier la participation dès que l'adresse ou le concours change
+  useEffect(() => {
+    const check = async () => {
+      if (contest && address && jerseyId) {
+        const res = await checkParticipation(contest.id, jerseyId, address);
+        if (res.success && res.hasParticipated) {
+          setHasParticipated(true);
+          setIsPopupVisible(false);
+        }
+      }
+    };
+    check();
+  }, [contest, address, jerseyId]);
 
   const handleParticipate = async () => {
     if (!contest || !address) {
@@ -88,7 +103,7 @@ export function ContestPopupWrapper({
     setIsPopupVisible(false);
   };
 
-  if (!isPopupVisible) {
+  if (!isPopupVisible || hasParticipated) {
     return null;
   }
 
