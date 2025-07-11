@@ -167,12 +167,15 @@ export function JerseyWalletConnector({
           </div>
         ) : (
           <div className="flex gap-3 justify-center">
-            {connectors
-              .filter(connector => connector.name === "MetaMask" || connector.name === "Injected")
-              .map((connector) => (
+            {(() => {
+              const metamaskConnector = connectors.find(
+                connector => connector.name === "MetaMask" || connector.name === "Injected"
+              );
+              if (!metamaskConnector) return null;
+              
+              return (
                 <Button
-                  key={connector.uid}
-                  onClick={() => handleConnectWallet(connector)}
+                  onClick={() => handleConnectWallet(metamaskConnector)}
                   disabled={isPending}
                   className="bg-white text-red-600 hover:bg-gray-100 font-semibold"
                 >
@@ -188,7 +191,8 @@ export function JerseyWalletConnector({
                     </>
                   )}
                 </Button>
-              ))}
+              );
+            })()}
           </div>
         )}
       </div>

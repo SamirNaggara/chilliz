@@ -90,11 +90,6 @@ export default async function JerseyPage({
             </div>
 
             <div className="flex items-center gap-3">
-              <Button className="hidden sm:flex bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700 text-white font-semibold">
-                <Zap className="w-4 h-4 mr-2" />
-                Connect with Chilliz
-              </Button>
-
               <JerseyWalletConnector variant="header" />
             </div>
           </div>
