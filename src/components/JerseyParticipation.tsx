@@ -1,0 +1,226 @@
+"use client";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Trophy,
+  Wallet,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Gift,
+} from "lucide-react";
+import { participateInContest } from "@/lib/actions";
+
+interface Contest {
+  id: string;
+  name: string;
+  description?: string;
+  prize: string;
+  startedAt: string;
+  endedAt: string | null;
+}
+
+interface JerseyParticipationProps {
+  jerseyId: string;
+  activeContest: Contest | null;
+}
+
+export function JerseyParticipation({
+  jerseyId,
+  activeContest,
+}: JerseyParticipationProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null);
+  const [walletAddress, setWalletAddress] = useState("");
+
+  const handleParticipation = async () => {
+    if (!activeContest) {
+      setResult({
+        success: false,
+        message: "Aucun concours actif pour le moment",
+      });
+      return;
+    }
+
+    if (!walletAddress.trim()) {
+      setResult({
+        success: false,
+        message: "Veuillez entrer votre adresse wallet",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    setResult(null);
+
+    try {
+      const response = await participateInContest(
+        activeContest.id,
+        jerseyId,
+        walletAddress.trim()
+      );
+
+      if (response.success) {
+        setResult({
+          success: true,
+          message: "Participation enregistrée avec succès !",
+        });
+        setWalletAddress("");
+      } else {
+        setResult({
+          success: false,
+          message: response.error || "Erreur lors de la participation",
+        });
+      }
+    } catch (error) {
+      setResult({
+        success: false,
+        message: "Erreur de connexion",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const formatTimeRemaining = (endTime: string | null) => {
+    if (!endTime) return "Pas de limite";
+
+    const end = new Date(endTime);
+    const now = new Date();
+    const diff = end.getTime() - now.getTime();
+
+    if (diff <= 0) return "Terminé";
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}m restantes`;
+    }
+    return `${minutes}m restantes`;
+  };
+
+  if (!activeContest) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-gray-600">
+            <Trophy className="w-5 h-5" />
+            Aucun Concours Actif
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-600 mb-4">
+            Il n&apos;y a actuellement aucun concours en cours.
+          </p>
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <p className="text-sm text-gray-700">
+              Revenez plus tard pour participer aux prochains événements PSG !
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 border-orange-200">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2 text-orange-800">
+            <Trophy className="w-5 h-5 text-yellow-600" />
+            Concours Actif
+          </CardTitle>
+          <Badge variant="default" className="bg-green-500">
+            En Cours
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">
+            {activeContest.name}
+          </h3>
+          {activeContest.description && (
+            <p className="text-gray-600 mb-3">{activeContest.description}</p>
+          )}
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-sm">
+            <Gift className="w-4 h-4 text-yellow-600" />
+            <span className="font-medium">{activeContest.prize}</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <Clock className="w-4 h-4" />
+            <span>{formatTimeRemaining(activeContest.endedAt)}</span>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label
+              htmlFor="wallet"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Adresse Wallet
+            </label>
+            <input
+              id="wallet"
+              type="text"
+              value={walletAddress}
+              onChange={(e) => setWalletAddress(e.target.value)}
+              placeholder="0x1234...5678"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            />
+          </div>
+
+          <Button
+            onClick={handleParticipation}
+            disabled={isLoading || !walletAddress.trim()}
+            className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-semibold"
+          >
+            {isLoading ? (
+              <>
+                <Clock className="w-4 h-4 mr-2 animate-spin" />
+                Participation en cours...
+              </>
+            ) : (
+              <>
+                <Wallet className="w-4 h-4 mr-2" />
+                Participer avec mon wallet
+              </>
+            )}
+          </Button>
+
+          {result && (
+            <div
+              className={`p-4 rounded-lg border ${
+                result.success
+                  ? "bg-green-50 border-green-200 text-green-800"
+                  : "bg-red-50 border-red-200 text-red-800"
+              }`}
+            >
+              <div className="flex items-start gap-2">
+                {result.success ? (
+                  <CheckCircle className="w-5 h-5 mt-0.5 text-green-600" />
+                ) : (
+                  <XCircle className="w-5 h-5 mt-0.5 text-red-600" />
+                )}
+                <div className="flex-1">
+                  <p className="font-medium">{result.message}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

@@ -3,31 +3,31 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useConnect, useDisconnect, type Connector } from "wagmi";
 import { formatAddress, detectMetaMask } from "@/lib/web3";
 import { useWeb3 } from "@/hooks/useWeb3";
-import { Zap, Coins, CheckCircle, AlertCircle, Trophy } from "lucide-react";
+import { Zap, Coins, CheckCircle, Trophy } from "lucide-react";
 
 interface JerseyWalletConnectorProps {
   variant?: "header" | "banner" | "compact";
 }
 
-export function JerseyWalletConnector({ 
-  variant = "header" 
+export function JerseyWalletConnector({
+  variant = "header",
 }: JerseyWalletConnectorProps) {
   const { address, isConnected } = useAccount();
   const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
-  const { 
-    hasEnoughPsgTokens, 
-    psgDiscountPercentage, 
+  const {
+    hasEnoughPsgTokens,
+    psgDiscountPercentage,
     psgTokenBalance,
-    disconnectWallet 
+    disconnectWallet,
   } = useWeb3();
 
   const [metaMaskInfo, setMetaMaskInfo] = useState({
     isInstalled: false,
-    isAvailable: false
+    isAvailable: false,
   });
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export function JerseyWalletConnector({
     setMetaMaskInfo(info);
   }, []);
 
-  const handleConnectWallet = async (connector: any) => {
+  const handleConnectWallet = async (connector: Connector) => {
     try {
       await connect({ connector });
     } catch (error) {
@@ -44,7 +44,7 @@ export function JerseyWalletConnector({
   };
 
   const handleDisconnect = () => {
-    disconnectWallet(); // Utiliser notre fonction personnalisée
+    disconnectWallet?.();
     disconnect();
   };
 
@@ -57,10 +57,17 @@ export function JerseyWalletConnector({
             <div className="flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded-md text-xs">
               <Coins className="w-3 h-3" />
               <span className="font-mono font-medium">
-                {Number(psgTokenBalance.balance / BigInt(10 ** psgTokenBalance.decimals)).toLocaleString()} {psgTokenBalance.symbol}
+                {Number(
+                  psgTokenBalance.balance /
+                    BigInt(10 ** psgTokenBalance.decimals)
+                ).toLocaleString()}{" "}
+                {psgTokenBalance.symbol}
               </span>
               {hasEnoughPsgTokens && (
-                <Badge variant="secondary" className="bg-green-100 text-green-700 text-xs px-1 py-0 ml-1">
+                <Badge
+                  variant="secondary"
+                  className="bg-green-100 text-green-700 text-xs px-1 py-0 ml-1"
+                >
                   -{psgDiscountPercentage}%
                 </Badge>
               )}
@@ -69,7 +76,7 @@ export function JerseyWalletConnector({
         </div>
       );
     }
-    return null; // Pas d'affichage compact si pas connecté
+    return null;
   }
 
   // Style pour le header
@@ -82,7 +89,10 @@ export function JerseyWalletConnector({
             <span className="font-medium">Connecté</span>
             <span className="font-mono">{formatAddress(address)}</span>
             {hasEnoughPsgTokens && (
-              <Badge variant="secondary" className="bg-blue-100 text-blue-700 ml-2">
+              <Badge
+                variant="secondary"
+                className="bg-blue-100 text-blue-700 ml-2"
+              >
                 <Trophy className="w-3 h-3 mr-1" />
                 PSG -{psgDiscountPercentage}%
               </Badge>
@@ -99,20 +109,13 @@ export function JerseyWalletConnector({
         </div>
       );
     }
-
     return (
       <div className="flex items-center gap-2">
-        {!metaMaskInfo.isInstalled && (
-          <div className="hidden md:flex items-center gap-1 text-orange-600 text-sm">
-            <AlertCircle className="w-4 h-4" />
-            <span>MetaMask requis</span>
-          </div>
-        )}
         {metaMaskInfo.isInstalled ? (
-          <Button 
+          <Button
             onClick={() => {
               const metamaskConnector = connectors.find(
-                c => c.name === "MetaMask" || c.name === "Injected"
+                (c) => c.name === "MetaMask" || c.name === "Injected"
               );
               if (metamaskConnector) handleConnectWallet(metamaskConnector);
             }}
@@ -132,7 +135,7 @@ export function JerseyWalletConnector({
             )}
           </Button>
         ) : (
-          <Button 
+          <Button
             onClick={() => window.open("https://metamask.io/", "_blank")}
             variant="outline"
             className="border-orange-300 text-orange-600 hover:bg-orange-50"
@@ -153,15 +156,11 @@ export function JerseyWalletConnector({
           <div className="flex items-center justify-center gap-4 mb-4">
             <CheckCircle className="w-8 h-8" />
             <div>
-              <h3 className="text-xl font-bold">
-                Wallet Connecté !
-              </h3>
+              <h3 className="text-xl font-bold">Wallet Connecté !</h3>
               <p className="text-sm opacity-90">
                 Profitez de vos avantages exclusifs Chilliz
               </p>
-              <p className="text-sm font-mono mt-1">
-                {formatAddress(address)}
-              </p>
+              <p className="text-sm font-mono mt-1">{formatAddress(address)}</p>
             </div>
           </div>
           <div className="flex gap-3 justify-center">
@@ -170,7 +169,7 @@ export function JerseyWalletConnector({
               Voir mes CHZ
             </Button>
             <Button
-              onClick={() => disconnect()}
+              onClick={handleDisconnect}
               variant="outline"
               className="border-white text-white hover:bg-white hover:text-green-600 transition-colors"
             >
@@ -180,27 +179,23 @@ export function JerseyWalletConnector({
         </div>
       );
     }
-
     return (
       <div className="bg-gradient-to-r from-red-600 to-blue-600 rounded-2xl p-6 mb-8 text-white">
         <div className="flex items-center justify-center gap-4 mb-4">
           <Coins className="w-8 h-8" />
           <div>
-            <h3 className="text-xl font-bold">
-              Connectez votre Wallet
-            </h3>
+            <h3 className="text-xl font-bold">Connectez votre Wallet</h3>
             <p className="text-sm opacity-90">
               Débloquez des réductions exclusives et des récompenses Chilliz
             </p>
           </div>
         </div>
-        
         {!metaMaskInfo.isInstalled ? (
           <div className="text-center">
             <p className="text-sm opacity-90 mb-3">
-              MetaMask n'est pas détecté sur votre navigateur
+              MetaMask n&apos;est pas détecté sur votre navigateur
             </p>
-            <Button 
+            <Button
               onClick={() => window.open("https://metamask.io/", "_blank")}
               className="bg-white text-red-600 hover:bg-gray-100 font-semibold"
             >
@@ -212,10 +207,10 @@ export function JerseyWalletConnector({
           <div className="flex gap-3 justify-center">
             {(() => {
               const metamaskConnector = connectors.find(
-                connector => connector.name === "MetaMask" || connector.name === "Injected"
+                (connector) =>
+                  connector.name === "MetaMask" || connector.name === "Injected"
               );
               if (!metamaskConnector) return null;
-              
               return (
                 <Button
                   onClick={() => handleConnectWallet(metamaskConnector)}
