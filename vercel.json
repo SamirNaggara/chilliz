@@ -2,11 +2,6 @@
   "buildCommand": "npm run build",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "functions": {
-    "src/lib/prisma.ts": {
-      "maxDuration": 30
-    }
-  },
   "env": {
     "DATABASE_URL": "file:./dev.db"
   },
