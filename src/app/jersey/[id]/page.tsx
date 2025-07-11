@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { JerseyImage } from "@/components/JerseyImage";
 import { JerseyLightbox } from "@/components/JerseyLightbox";
 import { ShopImage } from "@/components/ShopImage";
+import { JerseyWalletConnector } from "@/components/JerseyWalletConnector";
+import { WalletPriceDisplay } from "@/components/WalletPriceDisplay";
 import {
   Shield,
   Zap,
@@ -87,10 +89,9 @@ export default async function JerseyPage({
               </span>
             </div>
 
-            <Button className="bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-700 hover:to-blue-700 text-white font-semibold">
-              <Zap className="w-4 h-4 mr-2" />
-              Connect with Chilliz
-            </Button>
+            <div className="flex items-center gap-3">
+              <JerseyWalletConnector variant="header" />
+            </div>
           </div>
         </div>
       </div>
@@ -210,23 +211,7 @@ export default async function JerseyPage({
             </p>
 
             {/* Bannière de connexion wallet */}
-            <div className="bg-gradient-to-r from-red-600 to-blue-600 rounded-2xl p-6 mb-8 text-white">
-              <div className="flex items-center justify-center gap-4 mb-4">
-                <Coins className="w-8 h-8" />
-                <div>
-                  <h3 className="text-xl font-bold">
-                    Connectez votre Wallet Chilliz
-                  </h3>
-                  <p className="text-sm opacity-90">
-                    Débloquez des réductions exclusives et des récompenses
-                  </p>
-                </div>
-              </div>
-              <Button className="bg-white text-red-600 hover:bg-gray-100 font-semibold">
-                <Zap className="w-4 h-4 mr-2" />
-                Connecter Wallet
-              </Button>
-            </div>
+            <JerseyWalletConnector variant="banner" />
           </div>
 
           {/* Filtres de catégories */}
@@ -273,20 +258,11 @@ export default async function JerseyPage({
                 <p className="text-gray-600 text-sm mb-4">
                   Maillot officiel du PSG
                 </p>
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <span className="text-2xl font-bold text-red-600">89€</span>
-                    <span className="text-sm text-gray-500 line-through ml-2">
-                      111€
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm text-blue-600 font-semibold">
-                      71 CHZ
-                    </div>
-                    <div className="text-xs text-gray-500">avec wallet</div>
-                  </div>
-                </div>
+                <WalletPriceDisplay 
+                  originalPrice={111}
+                  discountPercentage={20}
+                  chzPrice={71}
+                />
                 <Button className="w-full bg-gradient-to-r from-red-600 to-blue-600">
                   <ShoppingBag className="w-4 h-4 mr-2" />
                   Acheter
@@ -357,22 +333,11 @@ export default async function JerseyPage({
                 <p className="text-gray-600 text-sm mb-4">
                   Ballon de match officiel
                 </p>
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <span className="text-2xl font-bold text-purple-600">
-                      45€
-                    </span>
-                    <span className="text-sm text-gray-500 line-through ml-2">
-                      60€
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm text-blue-600 font-semibold">
-                      34 CHZ
-                    </div>
-                    <div className="text-xs text-gray-500">avec wallet</div>
-                  </div>
-                </div>
+                <WalletPriceDisplay 
+                  originalPrice={60}
+                  discountPercentage={25}
+                  chzPrice={34}
+                />
                 <Button className="w-full bg-gradient-to-r from-red-600 to-blue-600">
                   <ShoppingBag className="w-4 h-4 mr-2" />
                   Acheter

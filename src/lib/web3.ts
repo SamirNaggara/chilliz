@@ -58,3 +58,44 @@ export const formatEther = (value: bigint): string => {
   const eth = Number(value) / 1e18
   return eth.toFixed(4)
 }
+
+// Fonction pour détecter la disponibilité de MetaMask
+export const detectMetaMask = (): {
+  isInstalled: boolean;
+  isAvailable: boolean;
+  provider: any;
+} => {
+  if (typeof window === 'undefined') {
+    return { isInstalled: false, isAvailable: false, provider: null }
+  }
+
+  const { ethereum } = window as any;
+  
+  const isInstalled = Boolean(ethereum && ethereum.isMetaMask);
+  const isAvailable = Boolean(ethereum);
+  
+  return {
+    isInstalled,
+    isAvailable,
+    provider: ethereum
+  }
+}
+
+// Fonction pour vérifier si l'utilisateur est sur un réseau supporté
+export const isSupportedChain = (chainId: number): boolean => {
+  const supportedChains = [1, 11155111, 137, 42161, 88888, 88882]; // Mainnet, Sepolia, Polygon, Arbitrum, Chiliz
+  return supportedChains.includes(chainId)
+}
+
+// Fonction pour obtenir le nom d'un réseau
+export const getChainName = (chainId: number): string => {
+  const chainNames: Record<number, string> = {
+    1: 'Ethereum Mainnet',
+    11155111: 'Sepolia Testnet',
+    137: 'Polygon Mainnet',
+    42161: 'Arbitrum One',
+    88888: 'Chiliz Chain',
+    88882: 'Chiliz Spicy Testnet',
+  }
+  return chainNames[chainId] || `Réseau inconnu (${chainId})`
+}
