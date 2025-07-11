@@ -19,6 +19,7 @@ model Jersey {
   createdAt    DateTime      @default(now())
   scans        Scan[]
   participations Participation[]
+  jerseyDexEntries JerseyDex[]
 }
 
 model Scan {
@@ -66,6 +67,16 @@ model Winner {
   walletAddress String  // Adresse wallet du gagnant
   prize     String   // Description du prix gagné (ex: "10 $PSG Fan Tokens")
   wonAt     DateTime @default(now())
+}
+
+model JerseyDex {
+  id            String   @id @default(cuid())
+  walletAddress String
+  jersey        Jersey   @relation(fields: [jerseyId], references: [id])
+  jerseyId      String
+  addedAt       DateTime @default(now())
+
+  @@unique([walletAddress, jerseyId], name: "wallet_jersey_unique")
 }
 
 enum ContestStatus {

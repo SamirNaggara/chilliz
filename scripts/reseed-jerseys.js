@@ -1,81 +1,87 @@
-const { PrismaClient } = require("@prisma/client");
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function reseedJerseys() {
   try {
-    console.log("🗑️ Suppression des maillots existants...");
-    await prisma.scan.deleteMany({});
-    await prisma.participation.deleteMany({});
-    await prisma.jersey.deleteMany({});
+    console.log("🧹 Nettoyage de la base de données...");
 
-    console.log("👕 Création des maillots...");
+    // Supprimer toutes les données existantes
+    await prisma.winner.deleteMany();
+    await prisma.participation.deleteMany();
+    await prisma.scan.deleteMany();
+    await prisma.jerseyDex.deleteMany();
+    await prisma.jersey.deleteMany();
+    await prisma.contest.deleteMany();
 
+    console.log("✅ Base de données nettoyée");
+
+    // Créer les maillots qui correspondent aux images disponibles
     const jerseys = [
       {
-        id: "jersey-1",
+        id: "jersey-mbappe-2024",
         name: "Maillot Mbappé Home 2024",
       },
       {
-        id: "jersey-2",
-        name: "Maillot Mbappé Away 2024",
-      },
-      {
-        id: "jersey-3",
-        name: "Maillot Mbappé Third 2024",
-      },
-      {
-        id: "jersey-4",
-        name: "Maillot Messi Home 2024",
-      },
-      {
-        id: "jersey-5",
+        id: "jersey-messi-2024",
         name: "Maillot Messi Away 2024",
-      },
-      {
-        id: "jersey-6",
-        name: "Maillot Neymar Home 2024",
-      },
-      {
-        id: "jersey-7",
-        name: "Maillot Neymar Away 2024",
-      },
-      {
-        id: "jersey-8",
-        name: "Maillot Hakimi Home 2024",
-      },
-      {
-        id: "jersey-9",
-        name: "Maillot Hakimi Away 2024",
-      },
-      {
-        id: "jersey-10",
-        name: "Maillot Marquinhos Home 2024",
       },
     ];
 
+    console.log("👕 Création des maillots...");
     for (const jersey of jerseys) {
       await prisma.jersey.create({
         data: jersey,
       });
-      console.log(`✅ Créé: ${jersey.name} (${jersey.id})`);
+      console.log(`✅ ${jersey.name} créé`);
     }
 
-    console.log("\n🎯 Maillots disponibles pour les tests :");
-    console.log("1. http://localhost:3000/jersey/jersey-1?isAuth=true");
-    console.log("2. http://localhost:3000/jersey/jersey-2?isAuth=true");
-    console.log("3. http://localhost:3000/jersey/jersey-3?isAuth=true");
-    console.log("4. http://localhost:3000/jersey/jersey-4?isAuth=true");
-    console.log("5. http://localhost:3000/jersey/jersey-5?isAuth=true");
-    console.log("6. http://localhost:3000/jersey/jersey-6?isAuth=true");
-    console.log("7. http://localhost:3000/jersey/jersey-7?isAuth=true");
-    console.log("8. http://localhost:3000/jersey/jersey-8?isAuth=true");
-    console.log("9. http://localhost:3000/jersey/jersey-9?isAuth=true");
-    console.log("10. http://localhost:3000/jersey/jersey-10?isAuth=true");
+    // Créer un concours de test
+    const contest = await prisma.contest.create({
+      data: {
+        name: "Concours Été 2024",
+        description: "Participez et gagnez des prix exclusifs !",
+        startedAt: new Date("2024-07-01"),
+        endedAt: new Date("2024-12-31"),
+        firstPrize: "1000 CHZ + Maillot Collector Mbappé",
+        secondPrize: "500 CHZ + Maillot Messi",
+        thirdPrize: "250 CHZ + Ballon Officiel",
+        status: "ACTIVE",
+      },
+    });
 
-    console.log("\n📊 Statistiques :");
-    const totalJerseys = await prisma.jersey.count();
-    console.log(`Total maillots créés : ${totalJerseys}`);
+    console.log("🏆 Concours de test créé");
+
+    // Créer quelques scans de test
+    const scans = [
+      {
+        walletAddress: "0x1234567890abcdef",
+        jerseyId: "jersey-mbappe-2024",
+      },
+      {
+        walletAddress: "0xabcdef1234567890",
+        jerseyId: "jersey-messi-2024",
+      },
+    ];
+
+    for (const scan of scans) {
+      await prisma.scan.create({
+        data: scan,
+      });
+    }
+
+    console.log("📱 Scans de test créés");
+
+    console.log("\n🎉 Reseed terminé avec succès !");
+    console.log("\n🔗 URLs de test :");
+    console.log(
+      "1. http://localhost:3000/jersey/jersey-mbappe-2024?isAuth=true"
+    );
+    console.log(
+      "2. http://localhost:3000/jersey/jersey-messi-2024?isAuth=true"
+    );
+    console.log("\n🏆 Admin :");
+    console.log(`   http://localhost:3000/admin/contests/${contest.id}`);
   } catch (error) {
     console.error("❌ Erreur:", error);
   } finally {

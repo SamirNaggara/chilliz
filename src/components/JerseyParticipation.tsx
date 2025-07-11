@@ -17,7 +17,9 @@ interface Contest {
   id: string;
   name: string;
   description?: string;
-  prize: string;
+  firstPrize: string;
+  secondPrize: string;
+  thirdPrize: string;
   startedAt: string;
   endedAt: string | null;
 }
@@ -77,7 +79,7 @@ export function JerseyParticipation({
           message: response.error || "Erreur lors de la participation",
         });
       }
-    } catch (error) {
+    } catch {
       setResult({
         success: false,
         message: "Erreur de connexion",
@@ -154,7 +156,7 @@ export function JerseyParticipation({
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm">
             <Gift className="w-4 h-4 text-yellow-600" />
-            <span className="font-medium">{activeContest.prize}</span>
+            <span className="font-medium">{activeContest.firstPrize}</span>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-gray-600">

@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { SmartMediaLightbox } from "@/components/media/SmartMediaLightbox";
 import { Shield } from "lucide-react";
+import Link from "next/link";
 
 interface JerseyHeroProps {
   jerseyName: string;
@@ -20,10 +21,12 @@ export function JerseyHero({
         {/* Badge d'authenticité en absolute */}
         <div className="absolute top-4 left-4 z-20">
           {isAuthentic ? (
-            <Badge className="bg-green-500 text-white px-3 py-1 text-xs font-semibold rounded-lg shadow-lg flex items-center gap-1">
-              <Shield className="w-4 h-4 mr-1" />
-              Authentique
-            </Badge>
+            <Link href="/jerseydex">
+              <Badge className="bg-green-500 text-white px-3 py-1 text-xs font-semibold rounded-lg shadow-lg flex items-center gap-1 hover:bg-green-600 transition-colors cursor-pointer">
+                <Shield className="w-4 h-4 mr-1" />
+                Authentique
+              </Badge>
+            </Link>
           ) : (
             <Badge className="bg-orange-400 text-white px-3 py-1 text-xs font-semibold rounded-lg shadow-lg flex items-center gap-1">
               <Shield className="w-4 h-4 mr-1" />

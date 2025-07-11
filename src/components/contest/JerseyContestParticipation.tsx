@@ -11,12 +11,13 @@ interface Contest {
   id: string;
   name: string;
   description: string | null;
-  prize: string;
   startedAt: Date;
   endedAt: Date | null;
-  firstPrize: string | null;
-  secondPrize: string | null;
-  thirdPrize: string | null;
+  firstPrize: string;
+  secondPrize: string;
+  thirdPrize: string;
+  maxWinners: number;
+  status: string;
 }
 
 interface JerseyContestParticipationProps {
@@ -158,13 +159,6 @@ export function JerseyContestParticipation({
           <p className="text-gray-600 mb-4">
             Seuls les maillots authentiques peuvent participer aux concours PSG.
           </p>
-          <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-            <p className="text-sm text-red-800">
-              💡 Pour tester : ajoutez{" "}
-              <code className="bg-red-100 px-1 rounded">?isAuth=true</code> à
-              l&apos;URL
-            </p>
-          </div>
         </CardContent>
       </Card>
     );
@@ -387,7 +381,7 @@ export function JerseyContestParticipation({
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm">
             <Gift className="w-4 h-4 text-yellow-600" />
-            <span className="font-medium">{activeContest.prize}</span>
+            <span className="font-medium">{activeContest.firstPrize}</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Clock className="w-4 h-4" />

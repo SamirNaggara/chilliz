@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { JerseyHeader } from "@/components/jersey/JerseyHeader";
 import { JerseyHero } from "@/components/jersey/JerseyHero";
 import { JerseyContestParticipation } from "@/components/contest/JerseyContestParticipation";
 import { ContestPopupWrapper } from "@/components/contest/ContestPopupWrapper";
 import { ShopSection } from "@/components/shop/ShopSection";
 import { JerseyFooter } from "@/components/jersey/JerseyFooter";
 import { getJerseyImage } from "@/lib/utils";
+import { AddToJerseydexButton } from "@/components/jersey/AddToJerseydexButton";
 
 interface JerseyPageProps {
   params: Promise<{ id: string }>;
@@ -54,13 +54,15 @@ export default async function JerseyPage({
   // 3. Rendu avec composants
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-blue-50">
-      <JerseyHeader />
       <div className="container mx-auto px-4 py-8">
         <JerseyHero
           jerseyName={jersey.name}
           jerseyImage={jerseyImage}
           isAuthentic={isAuth}
         />
+        <div className="flex justify-center mt-6 mb-8">
+          <AddToJerseydexButton jerseyId={jersey.id} />
+        </div>
         <div className="mb-12">
           <JerseyContestParticipation
             jerseyId={jersey.id}

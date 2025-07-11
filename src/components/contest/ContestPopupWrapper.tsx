@@ -9,7 +9,9 @@ interface Contest {
   id: string;
   name: string;
   description: string | null;
-  prize: string;
+  firstPrize: string;
+  secondPrize: string;
+  thirdPrize: string;
   startedAt: Date;
   endedAt: Date | null;
   maxWinners: number;

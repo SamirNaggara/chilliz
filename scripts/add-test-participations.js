@@ -1,4 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -8,7 +8,7 @@ async function addTestParticipations() {
     const contest = await prisma.contest.findFirst({
       where: {
         name: {
-          contains: "Concours Maillot Mbappé 2024",
+          contains: "Concours Été 2024",
         },
       },
     });
@@ -25,44 +25,52 @@ async function addTestParticipations() {
     // Adresses de test avec des usernames
     const testParticipants = [
       {
-        walletAddress: "0x1234567890123456789012345678901234567890",
-        username: "MbappéFan2024",
-        jerseyId: "jersey-1",
+        contestId: contest.id,
+        walletAddress: "0x1234567890abcdef",
+        jerseyId: "jersey-mbappe-2024",
+        username: "user1",
       },
       {
-        walletAddress: "0x2345678901234567890123456789012345678901",
-        username: "PSGSupporter",
-        jerseyId: "jersey-2",
+        contestId: contest.id,
+        walletAddress: "0xabcdef1234567890",
+        jerseyId: "jersey-messi-2024",
+        username: "user2",
       },
       {
-        walletAddress: "0x3456789012345678901234567890123456789012",
-        username: "ChillizLover",
-        jerseyId: "jersey-1",
+        contestId: contest.id,
+        walletAddress: "0x1111111111111111",
+        jerseyId: "jersey-mbappe-2024",
+        username: "user3",
       },
       {
-        walletAddress: "0x4567890123456789012345678901234567890123",
-        username: "CryptoCollector",
-        jerseyId: "jersey-3",
+        contestId: contest.id,
+        walletAddress: "0x2222222222222222",
+        jerseyId: "jersey-mbappe-2024",
+        username: "user4",
       },
       {
-        walletAddress: "0x5678901234567890123456789012345678901234",
-        username: "FanTokenHolder",
-        jerseyId: "jersey-2",
+        contestId: contest.id,
+        walletAddress: "0x3333333333333333",
+        jerseyId: "jersey-messi-2024",
+        username: "user5",
       },
       {
-        walletAddress: "0x6789012345678901234567890123456789012345",
-        username: "Web3Enthusiast",
-        jerseyId: "jersey-1",
+        contestId: contest.id,
+        walletAddress: "0x4444444444444444",
+        jerseyId: "jersey-mbappe-2024",
+        username: "user6",
       },
       {
-        walletAddress: "0x7890123456789012345678901234567890123456",
-        username: "BlockchainGuru",
-        jerseyId: "jersey-3",
+        contestId: contest.id,
+        walletAddress: "0x5555555555555555",
+        jerseyId: "jersey-mbappe-2024",
+        username: "user7",
       },
       {
-        walletAddress: "0x8901234567890123456789012345678901234567",
-        username: "DeFiMaster",
-        jerseyId: "jersey-2",
+        contestId: contest.id,
+        walletAddress: "0x6666666666666666",
+        jerseyId: "jersey-messi-2024",
+        username: "user8",
       },
     ];
 
@@ -75,7 +83,7 @@ async function addTestParticipations() {
       try {
         await prisma.participation.create({
           data: {
-            contestId: contest.id,
+            contestId: participant.contestId,
             jerseyId: participant.jerseyId,
             walletAddress: participant.walletAddress,
             username: participant.username,
@@ -104,7 +112,7 @@ async function addTestParticipations() {
       `📊 Total des participations pour ce concours: ${participationsCount}`
     );
     console.log(`\n🔗 Pour tester la sélection des gagnants:`);
-    console.log(`   http://localhost:3001/admin/contests/${contest.id}`);
+    console.log(`   http://localhost:3000/admin/contests/${contest.id}`);
   } catch (error) {
     console.error("❌ Erreur:", error);
   } finally {

@@ -19,7 +19,9 @@ interface Contest {
   id: string;
   name: string;
   description: string | null;
-  prize: string;
+  firstPrize: string;
+  secondPrize: string;
+  thirdPrize: string;
   startedAt: Date;
   endedAt: Date | null;
   maxWinners: number;
@@ -176,7 +178,7 @@ export function ContestPopup({
                   <Gift className="w-8 h-8 text-yellow-300" />
                 </div>
                 <div className="text-3xl font-bold text-yellow-300 mb-2">
-                  {contest.prize}
+                  {contest.firstPrize}
                 </div>
                 <div className="flex items-center justify-center gap-4 text-sm text-white/80">
                   <div className="flex items-center gap-1">
@@ -222,7 +224,7 @@ export function ContestPopup({
                 </p>
                 <p className="text-white/80 text-sm">
                   Participez maintenant avec votre maillot authentique et tentez
-                  de remporter {contest.prize}
+                  de remporter {contest.firstPrize}
                 </p>
               </div>
               {/* Champ username */}
