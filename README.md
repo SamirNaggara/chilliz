@@ -1,36 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏆 POC Chilliz - Gestion des Maillots
 
-## Getting Started
+Un projet Next.js avec Prisma SQLite pour gérer les utilisateurs, maillots et scans.
 
-First, run the development server:
+## 🚀 Technologies utilisées
+
+- **Next.js 15** avec App Router
+- **TypeScript** pour le typage statique
+- **Prisma** avec SQLite pour la base de données
+- **Tailwind CSS** pour le styling
+- **shadcn/ui** pour les composants UI
+- **Server Actions** pour le backend
+
+## 📋 Fonctionnalités
+
+- ✅ Création d'utilisateurs avec adresse wallet
+- ✅ Création de maillots avec ID et nom
+- ✅ Enregistrement de scans (utilisateur + maillot)
+- ✅ Affichage des données en temps réel
+- ✅ Interface moderne avec shadcn/ui
+
+## 🗄️ Modèle de données
+
+### User
+
+- `id`: Identifiant unique (cuid)
+- `wallet`: Adresse wallet unique
+- `scans`: Relation avec les scans
+- `winners`: Relation avec les gains
+- `createdAt`: Date de création
+
+### Jersey
+
+- `id`: Identifiant du maillot (peut être l'ID physique de la puce)
+- `name`: Nom ou description du maillot
+- `scans`: Relation avec les scans
+- `createdAt`: Date de création
+
+### Scan
+
+- `id`: Identifiant unique (cuid)
+- `user`: Relation avec l'utilisateur
+- `jersey`: Relation avec le maillot
+- `scannedAt`: Date et heure du scan
+
+### Contest
+
+- `id`: Identifiant unique (cuid)
+- `startedAt`: Date de début
+- `endedAt`: Date de fin (optionnel)
+- `winners`: Relation avec les gagnants
+- `createdAt`: Date de création
+
+### Winner
+
+- `id`: Identifiant unique (cuid)
+- `contest`: Relation avec le concours
+- `user`: Relation avec l'utilisateur
+- `prize`: Description du prix gagné
+
+## 🛠️ Installation
+
+1. **Cloner le projet**
+
+```bash
+git clone <repository-url>
+cd poc-chilliz
+```
+
+2. **Installer les dépendances**
+
+```bash
+npm install
+```
+
+3. **Configurer la base de données**
+
+```bash
+npx prisma generate
+npx prisma migrate dev
+```
+
+4. **Lancer le serveur de développement**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. **Ouvrir dans le navigateur**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📁 Structure du projet
 
-## Learn More
+```
+src/
+├── app/
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   ├── ui/           # Composants shadcn/ui
+│   ├── CreateUserForm.tsx
+│   ├── CreateJerseyForm.tsx
+│   └── CreateScanForm.tsx
+└── lib/
+    ├── actions.ts    # Server Actions
+    ├── prisma.ts     # Configuration Prisma
+    └── utils.ts      # Utilitaires
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 🔧 Commandes utiles
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Générer le client Prisma
+npx prisma generate
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Créer une migration
+npx prisma migrate dev --name <nom-migration>
 
-## Deploy on Vercel
+# Voir la base de données
+npx prisma studio
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Reset de la base de données
+npx prisma migrate reset
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🎯 Utilisation
+
+1. **Créer un utilisateur** : Entrez une adresse wallet
+2. **Créer un maillot** : Entrez l'ID et le nom du maillot
+3. **Enregistrer un scan** : Sélectionnez un utilisateur et un maillot
+4. **Voir les données** : Les listes se mettent à jour automatiquement
+
+## 🔮 Prochaines étapes
+
+- [ ] Ajouter l'authentification
+- [ ] Implémenter les concours et gains
+- [ ] Ajouter des statistiques
+- [ ] Interface mobile responsive
+- [ ] API REST pour intégration externe
+
+## 📝 Notes
+
+- La base de données SQLite est stockée dans `prisma/dev.db`
+- Les Server Actions sont utilisées pour toutes les opérations CRUD
+- L'interface utilise Tailwind CSS et shadcn/ui pour un design moderne
+- Le projet est prêt pour la production avec Next.js 15

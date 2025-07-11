@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  wallet    String   @unique
+  scans     Scan[]
+  winners   Winner[]
+  createdAt DateTime @default(now())
+}
+
+model Jersey {
+  id        String   @id // Peut être égal à l'ID "physique" inscrit dans la puce (ex: UUID, ou "jersey-1")
+  name      String   // Nom ou description (ex: "Maillot Mbappé Home 2024")
+  createdAt DateTime @default(now())
+  scans     Scan[]
+}
+
+model Scan {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  jersey    Jersey   @relation(fields: [jerseyId], references: [id])
+  jerseyId  String
+  scannedAt DateTime @default(now())
+}
+
+model Contest {
+  id         String    @id @default(cuid())
+  startedAt  DateTime
+  endedAt    DateTime?
+  winners    Winner[]
+  createdAt  DateTime  @default(now())
+}
+
+model Winner {
+  id        String   @id @default(cuid())
+  contest   Contest  @relation(fields: [contestId], references: [id])
+  contestId String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  prize     String   // Description du prix gagné (ex: "10 $PSG Fan Tokens")
+}
