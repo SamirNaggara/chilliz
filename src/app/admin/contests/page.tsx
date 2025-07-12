@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,23 +5,11 @@ import { Calendar, Trophy, Users, Crown, Medal, Award } from "lucide-react";
 import { CreateContestForm } from "@/components/contest/CreateContestForm";
 import { FinishContestButton } from "@/components/contest/FinishContestButton";
 import Link from "next/link";
+import { getContests } from "@/lib/contest-actions";
 
 export default async function AdminContestsPage() {
-  const contests = await prisma.contest.findMany({
-    include: {
-      participations: {
-        include: {
-          jersey: true,
-        },
-      },
-      winners: {
-        include: {},
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  const contestsResult = await getContests();
+  const contests = contestsResult.success ? contestsResult.contests : [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-blue-50">
@@ -53,7 +40,7 @@ export default async function AdminContestsPage() {
               Concours Existants
             </h2>
 
-            {contests.length === 0 ? (
+            {!contests || contests.length === 0 ? (
               <Card>
                 <CardContent className="p-8 text-center text-gray-500">
                   <Trophy className="w-12 h-12 mx-auto mb-4 text-gray-300" />
@@ -137,11 +124,11 @@ export default async function AdminContestsPage() {
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <Users className="w-4 h-4" />
                           <span>
-                            {contest.participations.length} participations
+                            {contest.participations?.length || 0} participations
                           </span>
                         </div>
 
-                        {contest.winners.length > 0 && (
+                        {contest.winners && contest.winners.length > 0 && (
                           <div className="bg-green-50 p-3 rounded-lg">
                             <h4 className="font-semibold text-green-800 mb-2">
                               Gagnants

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 // GET /api/jerseydex?wallet=0x...
 export async function GET(request: NextRequest) {
@@ -45,6 +46,11 @@ export async function POST(request: NextRequest) {
     const entry = await prisma.jerseyDex.create({
       data: { walletAddress: walletAddress.toLowerCase(), jerseyId },
     });
+
+    // Revalidation des chemins pour forcer le rafraîchissement du cache
+    revalidatePath("/jerseydex");
+    revalidatePath("/");
+
     return NextResponse.json({ success: true, entry });
   } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

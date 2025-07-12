@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function POST(request: NextRequest) {
   try {
@@ -69,6 +70,10 @@ export async function POST(request: NextRequest) {
         maxWinners: 3, // Fixé à 3 gagnants
       },
     });
+
+    // Revalidation des chemins pour forcer le rafraîchissement du cache
+    revalidatePath("/admin/contests");
+    revalidatePath("/");
 
     return NextResponse.json(
       {

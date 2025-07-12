@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Play, Pause, Crown, Medal, Award } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { createContest } from "@/lib/contest-actions";
 
 interface CreateContestFormProps {
   onSuccess?: () => void;
@@ -31,18 +32,12 @@ export function CreateContestForm({ onSuccess }: CreateContestFormProps) {
     setError(null);
 
     try {
-      const response = await fetch("/api/contests", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const result = await createContest(formData);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Erreur lors de la création du concours");
+      if (!result.success) {
+        throw new Error(
+          result.error || "Erreur lors de la création du concours"
+        );
       }
 
       // Reset form

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Trophy, Shield, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { getJerseyImage } from "@/lib/utils";
+import { getJerseyDexEntries } from "@/lib/jerseydex-actions";
 
 interface JerseyDexEntry {
   id: string;
@@ -14,8 +15,11 @@ interface JerseyDexEntry {
   jersey: {
     id: string;
     name: string;
+    createdAt: Date;
+    assetUrl: string | null;
+    assetType: string | null;
   };
-  addedAt: string;
+  addedAt: Date;
 }
 
 export default function JerseydexPage() {
@@ -30,20 +34,24 @@ export default function JerseydexPage() {
       return;
     }
 
-    fetch(`/api/jerseydex?wallet=${address}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setEntries(data.entries || []);
+    // Utiliser l'action serveur au lieu de l'API route
+    const loadEntries = async () => {
+      try {
+        const result = await getJerseyDexEntries(address);
+        if (result.success) {
+          setEntries(result.entries || []);
         } else {
-          setError(data.message || "Erreur lors du chargement");
+          setError(result.error || "Erreur lors du chargement");
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         setError("Erreur de connexion");
         console.error(err);
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEntries();
   }, [address, isConnected]);
 
   if (!isConnected) {
