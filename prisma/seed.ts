@@ -24,6 +24,18 @@ async function main() {
     },
   });
 
+  const jersey3 = await prisma.jersey.upsert({
+    where: { id: "chiliz-hacking-paris-hat" },
+    update: {},
+    create: {
+      id: "chiliz-hacking-paris-hat",
+      name: "Chiliz Hacking Paris Hat",
+      assetUrl:
+        "https://draft-nft-image.s3.eu-north-1.amazonaws.com/c42af7d86714_1752231777917_1.mp4",
+      assetType: "video",
+    },
+  });
+
   // Créer un concours actif avec les nouveaux champs de prix
   const contest = await prisma.contest.upsert({
     where: { id: "contest-summer-2024" },
@@ -72,6 +84,7 @@ async function main() {
   console.log(
     "📱 Sample wallet addresses: 0x1234567890abcdef, 0xabcdef1234567890"
   );
+  console.log("👒 Casquette vidéo créée :", jersey3.name);
 }
 
 main()

@@ -17,6 +17,8 @@ model Jersey {
   id           String        @id // Peut être égal à l'ID "physique" inscrit dans la puce (ex: UUID, ou "jersey-1")
   name         String        // Nom ou description (ex: "Maillot Mbappé Home 2024")
   createdAt    DateTime      @default(now())
+  assetUrl     String?       // URL de l'asset (image ou vidéo)
+  assetType    String?       // Type d'asset : 'image' ou 'video'
   scans        Scan[]
   participations Participation[]
   jerseyDexEntries JerseyDex[]
