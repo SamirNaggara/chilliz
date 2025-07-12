@@ -40,13 +40,15 @@ export function SmartMediaLightbox({
           tabIndex={-1}
         >
           <div
-            className="relative max-w-3xl w-full flex items-center justify-center"
+            className="relative w-full max-w-3xl max-h-[90vh] flex items-center justify-center p-2 sm:p-8"
             onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: "95vw", maxHeight: "95vh" }}
           >
             <button
-              className="absolute top-4 right-4 text-white text-3xl font-bold bg-black/60 rounded-full w-10 h-10 flex items-center justify-center hover:bg-black/80 transition"
+              className="fixed top-4 right-4 sm:absolute sm:top-4 sm:right-4 text-white text-3xl font-bold bg-black/60 rounded-full w-10 h-10 flex items-center justify-center hover:bg-black/80 transition z-50"
               onClick={() => setOpen(false)}
               aria-label="Fermer"
+              style={{ zIndex: 1001 }}
             >
               ×
             </button>
@@ -54,7 +56,7 @@ export function SmartMediaLightbox({
               basename={basename}
               alt={alt}
               fallbackSrc={fallbackSrc}
-              className="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl bg-black"
+              className="w-full max-h-[80vh] object-contain bg-black"
             />
           </div>
         </div>

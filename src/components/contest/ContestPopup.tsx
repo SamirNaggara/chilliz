@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Trophy,
   Gift,
   Clock,
   Star,
@@ -150,18 +149,13 @@ export function ContestPopup({
           </button>
 
           {/* Contenu de la popup */}
-          <div className="bg-gradient-to-br from-yellow-400 via-orange-500 to-red-600 rounded-3xl p-8 text-white shadow-2xl transform animate-in zoom-in-95 duration-500">
+          <div className="bg-gradient-to-br from-yellow-400 via-orange-500 to-red-600 rounded-3xl p-8 text-white shadow-2xl transform animate-in zoom-in-95 duration-500 max-h-[90vh] overflow-y-auto">
             {/* Header avec badge */}
             <div className="text-center mb-6">
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-4">
-                <Trophy className="w-5 h-5 text-yellow-300" />
-                <span className="font-semibold text-sm">CONCOURS ACTIF</span>
-              </div>
-
+              {/* Badge supprimé */}
               <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-white to-yellow-200 bg-clip-text text-transparent">
                 🏆 {contest.name}
               </h1>
-
               {contest.description && (
                 <p className="text-lg text-white/90 mb-4">
                   {contest.description}
@@ -218,15 +212,6 @@ export function ContestPopup({
 
             {/* Call to action */}
             <div className="text-center space-y-4">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <p className="text-lg font-semibold mb-2">
-                  🎯 Vous avez une chance de gagner !
-                </p>
-                <p className="text-white/80 text-sm">
-                  Participez maintenant avec votre maillot authentique et tentez
-                  de remporter {contest.firstPrize}
-                </p>
-              </div>
               {/* Champ username */}
               {setUsername && (
                 <div className="mb-2">
@@ -280,10 +265,7 @@ export function ContestPopup({
               )}
             </div>
 
-            {/* Footer */}
-            <div className="text-center mt-6 text-white/60 text-sm">
-              <p>✨ Scannez votre maillot pour participer automatiquement</p>
-            </div>
+            {/* Footer supprimé */}
           </div>
         </div>
       </div>
