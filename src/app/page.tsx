@@ -14,6 +14,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+// Forcer la revalidation dynamique de cette page
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function Home() {
   const jerseysResult = await getJerseys();
   const contestsResult = await getContests();

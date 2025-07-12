@@ -7,6 +7,10 @@ import { FinishContestButton } from "@/components/contest/FinishContestButton";
 import Link from "next/link";
 import { getContests } from "@/lib/contest-actions";
 
+// Forcer la revalidation dynamique de cette page
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function AdminContestsPage() {
   const contestsResult = await getContests();
   const contests = contestsResult.success ? contestsResult.contests : [];
