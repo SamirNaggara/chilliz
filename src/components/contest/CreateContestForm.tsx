@@ -34,11 +34,20 @@ export function CreateContestForm({ onSuccess }: CreateContestFormProps) {
     // Conversion locale -> UTC
     const toUTCISOString = (localDateStr: string) => {
       if (!localDateStr) return "";
-      const localDate = new Date(localDateStr);
-      // Décalage du fuseau horaire local
+
+      // Créer une date en heure locale
+      const [datePart, timePart] = localDateStr.split("T");
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hour, minute] = timePart.split(":").map(Number);
+
+      // Créer la date en heure locale (sans décalage UTC)
+      const localDate = new Date(year, month - 1, day, hour, minute, 0);
+
+      // Convertir en UTC en soustrayant le décalage horaire
       const utcDate = new Date(
         localDate.getTime() - localDate.getTimezoneOffset() * 60000
       );
+
       return utcDate.toISOString();
     };
 
@@ -52,12 +61,14 @@ export function CreateContestForm({ onSuccess }: CreateContestFormProps) {
       const result = await createContest(dataToSend);
 
       if (!result.success) {
-        throw new Error(
-          result.error || "Erreur lors de la création du concours"
+        setError(
+          result.error ||
+            "Une erreur s'est produite lors de la création du concours"
         );
+        return;
       }
 
-      // Reset form
+      // Réinitialiser le formulaire
       setFormData({
         name: "",
         description: "",
@@ -68,11 +79,12 @@ export function CreateContestForm({ onSuccess }: CreateContestFormProps) {
         thirdPrize: "",
       });
 
-      // Refresh the page to show the new contest
-      router.refresh();
+      // Rediriger vers la page des concours
+      router.push("/admin/contests");
       onSuccess?.();
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Erreur inconnue");
+      console.error("Erreur lors de la création du concours:", error);
+      setError("Une erreur s'est produite lors de la création du concours");
     } finally {
       setIsLoading(false);
     }
