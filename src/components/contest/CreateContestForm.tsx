@@ -43,9 +43,9 @@ export function CreateContestForm({ onSuccess }: CreateContestFormProps) {
       // Créer la date en heure locale (sans décalage UTC)
       const localDate = new Date(year, month - 1, day, hour, minute, 0);
 
-      // Convertir en UTC en soustrayant le décalage horaire
+      // Convertir en UTC en ajoutant le décalage horaire (correction)
       const utcDate = new Date(
-        localDate.getTime() - localDate.getTimezoneOffset() * 60000
+        localDate.getTime() + localDate.getTimezoneOffset() * 60000
       );
 
       return utcDate.toISOString();
