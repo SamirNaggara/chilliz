@@ -3,9 +3,11 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, CheckCircle, Clock, Gift } from "lucide-react";
+import { Trophy, CheckCircle, Clock, Gift, ExternalLink } from "lucide-react";
 import { participateInContest, checkParticipation } from "@/lib/actions";
 import { useAccount } from "wagmi";
+import { BlockchainStatus } from "@/components/BlockchainStatus";
+import { blockchainUtils } from "@/lib/chiliz-blockchain";
 
 interface Contest {
   id: string;
@@ -35,6 +37,8 @@ export function JerseyContestParticipation({
   const [result, setResult] = useState<{
     success: boolean;
     message: string;
+    blockchainTx?: string;
+    explorerUrl?: string;
   } | null>(null);
   const [walletAddress, setWalletAddress] = useState("");
   const [username, setUsername] = useState("");
@@ -109,6 +113,8 @@ export function JerseyContestParticipation({
         setResult({
           success: true,
           message: "Participation enregistrée avec succès !",
+          blockchainTx: response.blockchainTx,
+          explorerUrl: response.explorerUrl,
         });
         setWalletAddress("");
         setHasParticipated(true);
@@ -228,6 +234,18 @@ export function JerseyContestParticipation({
             <p className="text-xs text-gray-500 mt-2">
               Restez connecté, les gagnants seront annoncés ici même !
             </p>
+
+            {/* Affichage blockchain pour participation confirmée */}
+            {result?.blockchainTx && (
+              <div className="mt-4">
+                <BlockchainStatus
+                  transactionHash={result.blockchainTx}
+                  type="participation"
+                  contestId={activeContest.id}
+                  walletAddress={walletAddress}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

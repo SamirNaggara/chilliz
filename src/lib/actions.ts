@@ -79,36 +79,30 @@ export async function participateInContest(
   username?: string
 ) {
   try {
-    // Vérifier si l'utilisateur a déjà participé avec ce maillot
-    const existingParticipation = await prisma.participation.findUnique({
-      where: {
-        contest_wallet_jersey_unique: {
-          contestId,
-          walletAddress,
-          jerseyId,
-        },
-      },
-    });
+    // Utiliser la nouvelle fonction blockchain
+    const { participateInLotteryWithBlockchain } = await import("./blockchain-actions");
+    
+    const result = await participateInLotteryWithBlockchain(
+      contestId,
+      jerseyId,
+      walletAddress,
+      username
+    );
 
-    if (existingParticipation) {
+    if (result.success) {
+      revalidatePath("/");
+      return {
+        success: true,
+        participation: result.data?.participation,
+        blockchainTx: result.transactionHash,
+        explorerUrl: result.explorerUrl,
+      };
+    } else {
       return {
         success: false,
-        error: "Vous avez déjà participé avec ce maillot",
+        error: result.error,
       };
     }
-
-    // Créer la participation
-    const participation = await prisma.participation.create({
-      data: {
-        contestId,
-        jerseyId,
-        walletAddress,
-        username,
-      },
-    });
-
-    revalidatePath("/");
-    return { success: true, participation };
   } catch (error) {
     console.error("Erreur lors de la participation:", error);
     return {

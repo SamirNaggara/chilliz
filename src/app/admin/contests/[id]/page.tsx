@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { FinishContestButton } from "@/components/contest/FinishContestButton";
 import { SelectWinnerForm } from "./SelectWinnerForm";
+import { BlockchainHistory } from "@/components/admin/BlockchainHistory";
 
 interface ContestDetailPageProps {
   params: Promise<{ id: string }>;
@@ -381,6 +382,11 @@ export default async function ContestDetailPage({
             )}
           </CardContent>
         </Card>
+
+        {/* Historique Blockchain */}
+        <div className="mb-8">
+          <BlockchainHistory contestId={id} />
+        </div>
       </div>
     </div>
   );
