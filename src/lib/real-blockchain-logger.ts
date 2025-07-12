@@ -30,8 +30,12 @@ class SimpleChilizLogger implements SimpleBlockchainLogger {
     transactionHash?: string;
     error?: string;
   }> {
+    console.log('🌟 DÉBUT createRealTransaction');
+    console.log('📥 Données entrées:', data);
+    
     try {
       if (!this.signer) {
+        console.log('❌ Pas de signer configuré');
         return {
           success: false,
           error: 'Pas de clé privée configurée. Ajoutez BLOCKCHAIN_PRIVATE_KEY à .env.local'
@@ -39,15 +43,19 @@ class SimpleChilizLogger implements SimpleBlockchainLogger {
       }
 
       console.log('🚀 Création d\'une vraie transaction Chiliz...');
+      console.log('🔑 Adresse du signer:', this.signer.address);
       console.log('📝 Données:', JSON.stringify(data, null, 2));
 
       // Créer une transaction simple avec les données en annexe
+      console.log('⚡ Envoi de la transaction...');
       const transaction = await this.signer.sendTransaction({
         to: this.signer.address, // Se renvoyer à soi-même (transaction nulle)
         value: ethers.parseEther('0'), // 0 CHZ
         data: ethers.hexlify(ethers.toUtf8Bytes(JSON.stringify(data))), // Données en hex
         gasLimit: 50000, // Limite de gas raisonnable
       });
+
+      console.log('✅ Transaction envoyée! Hash:', transaction.hash);
 
       console.log('✅ Transaction créée:', transaction.hash);
       console.log('🌐 Voir sur explorer:', `https://spicy-explorer.chiliz.com/tx/${transaction.hash}`);
@@ -89,6 +97,9 @@ class SimpleChilizLogger implements SimpleBlockchainLogger {
     jerseyId: string,
     username?: string
   ) {
+    console.log('🎯 DÉBUT createLotteryParticipation');
+    console.log('📊 Paramètres:', { contestId, participantAddress, jerseyId, username });
+    
     const lotteryData = {
       type: 'LOTTERY_PARTICIPATION',
       contestId,
@@ -99,7 +110,13 @@ class SimpleChilizLogger implements SimpleBlockchainLogger {
       platform: 'FanScan-Chiliz-Hackathon'
     };
 
-    return await this.createRealTransaction(lotteryData);
+    console.log('📋 Données de loterie créées:', lotteryData);
+    console.log('🔄 Appel de createRealTransaction...');
+
+    const result = await this.createRealTransaction(lotteryData);
+    
+    console.log('📤 Résultat de createRealTransaction:', result);
+    return result;
   }
 
   // Créer une transaction pour l'annonce d'un gagnant

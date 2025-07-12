@@ -19,6 +19,9 @@ export async function participateInLotteryWithBlockchain(
   walletAddress: string,
   username?: string
 ): Promise<BlockchainActionResult> {
+  console.log('🔥 DÉBUT PARTICIPATION BLOCKCHAIN');
+  console.log('📊 Paramètres:', { contestId, jerseyId, walletAddress, username });
+  
   try {
     console.log('🎲 Participation loterie avec blockchain:', { contestId, jerseyId, walletAddress, username });
 
@@ -51,6 +54,7 @@ export async function participateInLotteryWithBlockchain(
 
     // 3. Créer une VRAIE transaction blockchain AVANT d'enregistrer en base
     console.log('🚀 Création d\'une vraie transaction blockchain...');
+    console.log('🔑 Appel de realChilizLogger.createLotteryParticipation...');
     
     const blockchainResult = await realChilizLogger.createLotteryParticipation(
       contestId,
@@ -58,6 +62,8 @@ export async function participateInLotteryWithBlockchain(
       jerseyId,
       username
     );
+
+    console.log('📋 Résultat de realChilizLogger:', blockchainResult);
 
     if (!blockchainResult.success) {
       console.error('❌ Erreur transaction blockchain:', blockchainResult.error);

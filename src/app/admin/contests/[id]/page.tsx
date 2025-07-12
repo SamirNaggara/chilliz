@@ -272,6 +272,7 @@ export default async function ContestDetailPage({
                       <th className="px-3 py-2 border">Participant</th>
                       <th className="px-3 py-2 border">Maillot</th>
                       <th className="px-3 py-2 border">Date</th>
+                      <th className="px-3 py-2 border">Blockchain</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -300,6 +301,25 @@ export default async function ContestDetailPage({
                         </td>
                         <td className="px-3 py-2 border">
                           {new Date(p.participatedAt).toLocaleString("fr-FR")}
+                        </td>
+                        <td className="px-3 py-2 border">
+                          {p.blockchainTxHash ? (
+                            <div className="space-y-1">
+                              <div className="text-xs text-gray-500 font-mono">
+                                {p.blockchainTxHash.slice(0, 10)}...{p.blockchainTxHash.slice(-8)}
+                              </div>
+                              <a
+                                href={`https://spicy-explorer.chiliz.com/tx/${p.blockchainTxHash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
+                              >
+                                🌐 Explorer
+                              </a>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-gray-400">Pas de blockchain</span>
+                          )}
                         </td>
                       </tr>
                     ))}
