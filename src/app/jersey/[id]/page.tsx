@@ -8,6 +8,10 @@ import { JerseyFooter } from "@/components/jersey/JerseyFooter";
 import { getJerseyImage } from "@/lib/utils";
 import { AddToJerseydexButton } from "@/components/jersey/AddToJerseydexButton";
 
+// Configuration pour éviter les problèmes de cache
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface JerseyPageProps {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ isAuth?: string }>;

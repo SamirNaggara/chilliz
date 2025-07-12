@@ -70,6 +70,8 @@ export async function createContest(data: CreateContestData) {
     // Revalidation des chemins pour forcer le rafraîchissement du cache
     revalidatePath("/admin/contests");
     revalidatePath("/");
+    // Revalider toutes les pages de maillots pour que l'info des concours soit mise à jour
+    revalidatePath("/jersey", "page");
 
     return {
       success: true,

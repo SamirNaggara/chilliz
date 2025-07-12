@@ -80,8 +80,10 @@ export async function participateInContest(
 ) {
   try {
     // Utiliser la nouvelle fonction blockchain
-    const { participateInLotteryWithBlockchain } = await import("./blockchain-actions");
-    
+    const { participateInLotteryWithBlockchain } = await import(
+      "./blockchain-actions"
+    );
+
     const result = await participateInLotteryWithBlockchain(
       contestId,
       jerseyId,
@@ -91,6 +93,7 @@ export async function participateInContest(
 
     if (result.success) {
       revalidatePath("/");
+      revalidatePath(`/jersey/${jerseyId}`);
       return {
         success: true,
         participation: result.data?.participation,
