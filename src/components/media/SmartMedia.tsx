@@ -66,16 +66,8 @@ export function SmartMedia({
         loop
         muted
         playsInline
-        style={{ maxHeight: 400, maxWidth: "100%", borderRadius: 16 }}
       />
     );
   }
-  return (
-    <img
-      src={src}
-      alt={alt}
-      className={className}
-      style={{ maxHeight: 400, maxWidth: "100%", borderRadius: 16 }}
-    />
-  );
+  return <img src={src} alt={alt} className={className} />;
 }
