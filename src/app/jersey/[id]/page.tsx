@@ -7,6 +7,7 @@ import { ShopSection } from "@/components/shop/ShopSection";
 import { JerseyFooter } from "@/components/jersey/JerseyFooter";
 import { getJerseyImage } from "@/lib/utils";
 import { AddToJerseydexButton } from "@/components/jersey/AddToJerseydexButton";
+import { RemoveIsAuthParam } from "@/components/RemoveIsAuthParam";
 
 interface JerseyPageProps {
   params: Promise<{ id: string }>;
@@ -54,6 +55,7 @@ export default async function JerseyPage({
   // 3. Rendu avec composants
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-blue-50">
+      <RemoveIsAuthParam />
       <div className="container mx-auto px-4 py-8">
         <JerseyHero
           jerseyName={jersey.name}
