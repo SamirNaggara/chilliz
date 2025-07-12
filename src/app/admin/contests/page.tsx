@@ -4,12 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Trophy, Users, Crown, Medal, Award } from "lucide-react";
 import { CreateContestForm } from "@/components/contest/CreateContestForm";
 import { FinishContestButton } from "@/components/contest/FinishContestButton";
+import { StartContestButton } from "@/components/contest/StartContestButton";
 import Link from "next/link";
 import { getContests } from "@/lib/contest-actions";
 
 // Forcer la revalidation dynamique de cette page
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 export default async function AdminContestsPage() {
   const contestsResult = await getContests();
@@ -74,11 +74,14 @@ export default async function AdminContestsPage() {
                               ? "default"
                               : contest.status === "FINISHED"
                               ? "secondary"
+                              : contest.status === "PENDING"
+                              ? "outline"
                               : "destructive"
                           }
                         >
                           {contest.status === "ACTIVE" && "En Cours"}
                           {contest.status === "FINISHED" && "Terminé"}
+                          {contest.status === "PENDING" && "En Attente"}
                           {contest.status === "CANCELLED" && "Annulé"}
                         </Badge>
                       </div>
@@ -88,48 +91,49 @@ export default async function AdminContestsPage() {
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <Calendar className="w-4 h-4" />
                           <span>
-                            {new Date(contest.startedAt).toLocaleString(
+                            Créé le{" "}
+                            {new Date(contest.createdAt).toLocaleString(
                               "fr-FR"
-                            )}{" "}
-                            -{" "}
-                            {contest.endedAt
-                              ? new Date(contest.endedAt).toLocaleString(
-                                  "fr-FR"
-                                )
-                              : "En cours"}
+                            )}
                           </span>
                         </div>
 
                         {/* Affichage des 3 prix */}
                         <div className="space-y-2">
                           <div className="flex items-center gap-2 text-sm">
-                            <Trophy className="w-4 h-4" />
-                            <span className="font-semibold">Prix :</span>
+                            <Crown className="w-4 h-4 text-yellow-500" />
+                            <span className="text-green-600 font-medium">
+                              1er: {contest.firstPrize}
+                            </span>
                           </div>
-                          <div className="grid grid-cols-1 gap-2 text-sm">
-                            <div className="flex items-center gap-2 text-yellow-700">
-                              <Crown className="w-3 h-3" />
-                              <span className="font-medium">1er :</span>
-                              <span>{contest.firstPrize}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-gray-700">
-                              <Medal className="w-3 h-3" />
-                              <span className="font-medium">2ème :</span>
-                              <span>{contest.secondPrize}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-orange-700">
-                              <Award className="w-3 h-3" />
-                              <span className="font-medium">3ème :</span>
-                              <span>{contest.thirdPrize}</span>
-                            </div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <Medal className="w-4 h-4 text-gray-500" />
+                            <span className="text-blue-600 font-medium">
+                              2ème: {contest.secondPrize}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <Award className="w-4 h-4 text-orange-500" />
+                            <span className="text-orange-600 font-medium">
+                              3ème: {contest.thirdPrize}
+                            </span>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Users className="w-4 h-4" />
-                          <span>
-                            {contest.participations?.length || 0} participations
-                          </span>
+                        {/* Statistiques */}
+                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                          <div className="flex items-center gap-1">
+                            <Users className="w-4 h-4" />
+                            <span>
+                              {contest.participations?.length || 0} participants
+                            </span>
+                          </div>
+                          {contest.winners && contest.winners.length > 0 && (
+                            <div className="flex items-center gap-1">
+                              <Trophy className="w-4 h-4 text-yellow-500" />
+                              <span>{contest.winners.length} gagnants</span>
+                            </div>
+                          )}
                         </div>
 
                         {contest.winners && contest.winners.length > 0 && (
@@ -163,6 +167,12 @@ export default async function AdminContestsPage() {
                               Voir Détails
                             </Button>
                           </Link>
+                          {contest.status === "PENDING" && (
+                            <StartContestButton
+                              contestId={contest.id}
+                              contestName={contest.name}
+                            />
+                          )}
                           {contest.status === "ACTIVE" && (
                             <FinishContestButton
                               contestId={contest.id}

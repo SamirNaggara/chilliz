@@ -38,14 +38,9 @@ export default async function JerseyPage({
   }
 
   // Récupérer le concours actif
-  const now = new Date();
   const activeContest = await prisma.contest.findFirst({
     where: {
       status: "ACTIVE",
-      startedAt: {
-        lte: now,
-      },
-      OR: [{ endedAt: null }, { endedAt: { gte: now } }],
     },
     orderBy: {
       createdAt: "desc",

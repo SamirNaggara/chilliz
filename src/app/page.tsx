@@ -92,6 +92,7 @@ export default async function Home() {
                       <div className="space-y-4">
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <Calendar className="w-4 h-4" />
+                          {/*
                           <span>
                             Jusqu&apos;au{" "}
                             {contest.endedAt
@@ -100,6 +101,7 @@ export default async function Home() {
                                 )
                               : "En cours"}
                           </span>
+                          */}
                         </div>
 
                         {/* Affichage des 3 prix */}

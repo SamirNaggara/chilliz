@@ -21,9 +21,8 @@ interface Contest {
   firstPrize: string;
   secondPrize: string;
   thirdPrize: string;
-  startedAt: Date;
-  endedAt: Date | null;
   maxWinners: number;
+  status: string;
 }
 
 interface ContestPopupProps {
@@ -75,22 +74,8 @@ export function ContestPopup({
     }
   }, [showSparkles]);
 
-  const formatTimeRemaining = (endTime: Date | null) => {
-    if (!endTime) return "Pas de limite";
-
-    const end = new Date(endTime);
-    const now = new Date();
-    const diff = end.getTime() - now.getTime();
-
-    if (diff <= 0) return "Terminé";
-
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-    if (hours > 0) {
-      return `${hours}h ${minutes}m restantes`;
-    }
-    return `${minutes}m restantes`;
+  const formatTimeRemaining = () => {
+    return "Concours en cours";
   };
 
   if (!contest || !isAuthentic || !isVisible) {
@@ -195,7 +180,7 @@ export function ContestPopup({
                   <span className="font-semibold">Temps Restant</span>
                 </div>
                 <div className="text-xl font-bold text-blue-200">
-                  {formatTimeRemaining(contest.endedAt)}
+                  {formatTimeRemaining()}
                 </div>
               </div>
 

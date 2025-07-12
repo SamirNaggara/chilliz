@@ -48,8 +48,6 @@ async function main() {
       id: "contest-summer-2024",
       name: "Concours Été 2024",
       description: "Participez et gagnez des prix exclusifs !",
-      startedAt: new Date("2024-07-01"),
-      endedAt: new Date("2024-12-31"),
       firstPrize: "1000 CHZ + Maillot Collector Mbappé",
       secondPrize: "500 CHZ + Maillot Messi",
       thirdPrize: "250 CHZ + Ballon Officiel",

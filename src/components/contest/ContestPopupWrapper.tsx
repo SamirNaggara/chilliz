@@ -12,9 +12,8 @@ interface Contest {
   firstPrize: string;
   secondPrize: string;
   thirdPrize: string;
-  startedAt: Date;
-  endedAt: Date | null;
   maxWinners: number;
+  status: string;
 }
 
 interface ContestPopupWrapperProps {

@@ -21,8 +21,7 @@ interface Contest {
   firstPrize: string;
   secondPrize: string;
   thirdPrize: string;
-  startedAt: string;
-  endedAt: string | null;
+  status: string;
 }
 
 interface JerseyParticipationProps {
@@ -94,22 +93,8 @@ export function JerseyParticipation({
     }
   };
 
-  const formatTimeRemaining = (endTime: string | null) => {
-    if (!endTime) return "Pas de limite";
-
-    const end = new Date(endTime);
-    const now = new Date();
-    const diff = end.getTime() - now.getTime();
-
-    if (diff <= 0) return "Terminé";
-
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-    if (hours > 0) {
-      return `${hours}h ${minutes}m restantes`;
-    }
-    return `${minutes}m restantes`;
+  const formatTimeRemaining = () => {
+    return "Concours en cours";
   };
 
   if (!activeContest) {
@@ -166,7 +151,7 @@ export function JerseyParticipation({
 
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Clock className="w-4 h-4" />
-            <span>{formatTimeRemaining(activeContest.endedAt)}</span>
+            <span>{formatTimeRemaining()}</span>
           </div>
         </div>
 

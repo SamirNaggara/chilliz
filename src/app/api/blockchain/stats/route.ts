@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Statistiques principales
     const [
@@ -9,94 +9,98 @@ export async function GET(request: NextRequest) {
       totalWinners,
       activeContests,
       recentParticipations,
-      recentWinners
+      recentWinners,
     ] = await Promise.all([
       // Total participations avec transaction blockchain
       prisma.participation.count({
         where: {
           blockchainTxHash: {
-            not: null
-          }
-        }
+            not: null,
+          },
+        },
       }),
 
       // Total gagnants annoncés sur blockchain
       prisma.winner.count({
         where: {
           blockchainTxHash: {
-            not: null
-          }
-        }
+            not: null,
+          },
+        },
       }),
 
       // Concours actifs
       prisma.contest.count({
         where: {
-          endedAt: null
-        }
+          status: "ACTIVE",
+        },
       }),
 
       // Participations récentes (dernières 24h)
       prisma.participation.findMany({
         where: {
           blockchainTxHash: {
-            not: null
+            not: null,
           },
           blockchainTimestamp: {
-            gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
-          }
+            gte: new Date(Date.now() - 24 * 60 * 60 * 1000),
+          },
         },
         select: {
           blockchainTxHash: true,
           blockchainTimestamp: true,
           blockchainConfirmed: true,
-          contestId: true
+          contestId: true,
         },
         orderBy: {
-          blockchainTimestamp: 'desc'
+          blockchainTimestamp: "desc",
         },
-        take: 20
+        take: 20,
       }),
 
       // Gagnants récents (dernières 24h)
       prisma.winner.findMany({
         where: {
           blockchainTxHash: {
-            not: null
+            not: null,
           },
           blockchainTimestamp: {
-            gte: new Date(Date.now() - 24 * 60 * 60 * 1000)
-          }
+            gte: new Date(Date.now() - 24 * 60 * 60 * 1000),
+          },
         },
         select: {
           blockchainTxHash: true,
           blockchainTimestamp: true,
           blockchainConfirmed: true,
-          contestId: true
+          contestId: true,
         },
         orderBy: {
-          blockchainTimestamp: 'desc'
+          blockchainTimestamp: "desc",
         },
-        take: 20
-      })
+        take: 20,
+      }),
     ]);
 
     // Combiner les transactions récentes
     const recentTransactions = [
-      ...recentParticipations.map(p => ({
+      ...recentParticipations.map((p) => ({
         hash: p.blockchainTxHash!,
-        type: 'LOTTERY_PARTICIPATION',
+        type: "LOTTERY_PARTICIPATION",
         timestamp: p.blockchainTimestamp!.getTime(),
         contestId: p.contestId,
-        status: p.blockchainConfirmed ? 'confirmed' as const : 'pending' as const
+        status: p.blockchainConfirmed
+          ? ("confirmed" as const)
+          : ("pending" as const),
       })),
-      ...recentWinners.map(w => ({
+      ...recentWinners.map((w) => ({
         hash: w.blockchainTxHash!,
-        type: 'WINNER_ANNOUNCEMENT',
+        type: "WINNER_ANNOUNCEMENT",
         timestamp: w.blockchainTimestamp!.getTime(),
         contestId: w.contestId,
-        status: w.blockchainConfirmed ? 'confirmed' as const : 'pending' as const
-      }))
+        status: w.blockchainConfirmed
+          ? ("confirmed" as const)
+          : ("pending" as const),
+      })),
     ].sort((a, b) => b.timestamp - a.timestamp);
 
     return NextResponse.json({
@@ -105,14 +109,13 @@ export async function GET(request: NextRequest) {
         totalParticipations,
         totalWinners,
         activeContests,
-        recentTransactions
-      }
+        recentTransactions,
+      },
     });
-
   } catch (error) {
-    console.error('Erreur récupération stats blockchain:', error);
+    console.error("Erreur récupération stats blockchain:", error);
     return NextResponse.json(
-      { success: false, error: 'Erreur serveur' },
+      { success: false, error: "Erreur serveur" },
       { status: 500 }
     );
   }

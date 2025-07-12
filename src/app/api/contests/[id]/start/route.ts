@@ -8,13 +8,9 @@ export async function POST(
   try {
     const { id } = await params;
 
-    // Vérifier que le concours existe et est actif
+    // Vérifier que le concours existe
     const contest = await prisma.contest.findUnique({
       where: { id },
-      include: {
-        participations: true,
-        winners: true,
-      },
     });
 
     if (!contest) {
@@ -24,27 +20,41 @@ export async function POST(
       );
     }
 
-    if (contest.status !== "ACTIVE") {
+    if (contest.status !== "PENDING") {
       return NextResponse.json(
-        { error: "Le concours n'est pas actif" },
+        { error: "Le concours n'est pas en attente de démarrage" },
         { status: 400 }
       );
     }
 
-    // Marquer le concours comme terminé
+    // Vérifier qu'il n'y a pas déjà un concours actif
+    const activeContest = await prisma.contest.findFirst({
+      where: {
+        status: "ACTIVE",
+      },
+    });
+
+    if (activeContest) {
+      return NextResponse.json(
+        { error: "Il y a déjà un concours actif en cours" },
+        { status: 400 }
+      );
+    }
+
+    // Démarrer le concours
     const updatedContest = await prisma.contest.update({
       where: { id },
       data: {
-        status: "FINISHED",
+        status: "ACTIVE",
       },
     });
 
     return NextResponse.json({
-      message: "Concours terminé avec succès",
+      message: "Concours démarré avec succès",
       contest: updatedContest,
     });
   } catch (error) {
-    console.error("Erreur lors de la finalisation du concours:", error);
+    console.error("Erreur lors du démarrage du concours:", error);
     return NextResponse.json(
       { error: "Erreur interne du serveur" },
       { status: 500 }
