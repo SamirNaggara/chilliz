@@ -31,8 +31,25 @@ export function CreateContestForm({ onSuccess }: CreateContestFormProps) {
     setIsLoading(true);
     setError(null);
 
+    // Conversion locale -> UTC
+    const toUTCISOString = (localDateStr: string) => {
+      if (!localDateStr) return "";
+      const localDate = new Date(localDateStr);
+      // Décalage du fuseau horaire local
+      const utcDate = new Date(
+        localDate.getTime() - localDate.getTimezoneOffset() * 60000
+      );
+      return utcDate.toISOString();
+    };
+
+    const dataToSend = {
+      ...formData,
+      startTime: toUTCISOString(formData.startTime),
+      endTime: toUTCISOString(formData.endTime),
+    };
+
     try {
-      const result = await createContest(formData);
+      const result = await createContest(dataToSend);
 
       if (!result.success) {
         throw new Error(
