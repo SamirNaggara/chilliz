@@ -4,7 +4,15 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAccount, useConnect, useDisconnect, type Connector } from "wagmi";
-import { formatAddress, detectMetaMask } from "@/lib/web3";
+import { 
+  formatAddress, 
+  detectMetaMask, 
+  isMobileDevice, 
+  createMetaMaskDeepLink, 
+  connectMetaMaskMobile,
+  getMobileMetaMaskError,
+  isProductionEnvironment
+} from "@/lib/web3";
 import { useWeb3 } from "@/hooks/useWeb3";
 import {
   Zap,
@@ -39,11 +47,15 @@ export function JerseyWalletConnector({
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isProduction, setIsProduction] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     const info = detectMetaMask();
     setMetaMaskInfo(info);
+    setIsMobile(isMobileDevice());
+    setIsProduction(isProductionEnvironment());
   }, []);
 
   useEffect(() => {
@@ -65,9 +77,39 @@ export function JerseyWalletConnector({
 
   const handleConnectWallet = async (connector: Connector) => {
     try {
+      // Sur mobile, utiliser la logique spéciale pour MetaMask
+      if (isMobile && (connector.name === "MetaMask" || connector.name === "Injected")) {
+        // Si MetaMask n'est pas installé sur mobile, utiliser deep link
+        if (!metaMaskInfo.isInstalled) {
+          const deepLink = createMetaMaskDeepLink();
+          console.log("🔗 Redirection vers MetaMask mobile:", deepLink);
+          window.location.href = deepLink;
+          return;
+        }
+        
+        // Si MetaMask est installé, essayer la connexion directe
+        try {
+          await connectMetaMaskMobile();
+        } catch (error) {
+          console.error("Erreur connexion directe mobile:", error);
+          // Fallback vers deep link en cas d'erreur
+          const deepLink = createMetaMaskDeepLink();
+          window.location.href = deepLink;
+          return;
+        }
+      }
+      
+      // Connexion standard pour desktop ou autres wallets
       await connect({ connector });
     } catch (error) {
       console.error("Erreur de connexion wallet:", error);
+      
+      // Sur mobile, toujours essayer le deep link en cas d'erreur
+      if (isMobile && (connector.name === "MetaMask" || connector.name === "Injected")) {
+        const deepLink = createMetaMaskDeepLink();
+        console.log("🔗 Fallback deep link:", deepLink);
+        window.location.href = deepLink;
+      }
     }
   };
 
@@ -183,7 +225,7 @@ export function JerseyWalletConnector({
 
     return (
       <div className="flex items-center gap-2">
-        {metaMaskInfo.isInstalled ? (
+        {metaMaskInfo.isInstalled || isMobile ? (
           <Button
             onClick={() => {
               const metamaskConnector = connectors.find(
@@ -202,19 +244,37 @@ export function JerseyWalletConnector({
             ) : (
               <>
                 <Zap className="w-4 h-4 mr-2" />
-                Connect Wallet
+                {isMobile && !metaMaskInfo.isInstalled ? "Open MetaMask" : "Connect Wallet"}
               </>
             )}
           </Button>
         ) : (
           <Button
-            onClick={() => window.open("https://metamask.io/", "_blank")}
+            onClick={() => {
+              if (isMobile) {
+                // Sur mobile, rediriger vers l'App Store/Play Store
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                const storeUrl = isIOS 
+                  ? "https://apps.apple.com/app/metamask/id1438144202"
+                  : "https://play.google.com/store/apps/details?id=io.metamask";
+                window.open(storeUrl, "_blank");
+              } else {
+                // Sur desktop, aller sur le site MetaMask
+                window.open("https://metamask.io/", "_blank");
+              }
+            }}
             variant="outline"
             className="border-orange-300 text-orange-600 hover:bg-orange-50"
           >
             <Zap className="w-4 h-4 mr-2" />
-            Install MetaMask
+            {isMobile ? "Install MetaMask App" : "Install MetaMask"}
           </Button>
+        )}
+        
+        {isMobile && !isProduction && (
+          <div className="text-xs text-yellow-600 bg-yellow-50 px-2 py-1 rounded">
+            ⚠️ HTTPS requis pour mobile
+          </div>
         )}
       </div>
     );
@@ -269,7 +329,7 @@ export function JerseyWalletConnector({
           </div>
         </div>
         <div className="flex gap-3 justify-center">
-          {metaMaskInfo.isInstalled ? (
+          {metaMaskInfo.isInstalled || isMobile ? (
             <Button
               onClick={() => {
                 const metamaskConnector = connectors.find(
@@ -288,21 +348,39 @@ export function JerseyWalletConnector({
               ) : (
                 <>
                   <Zap className="w-4 h-4 mr-2" />
-                  Connect Wallet
+                  {isMobile && !metaMaskInfo.isInstalled ? "Open MetaMask" : "Connect Wallet"}
                 </>
               )}
             </Button>
           ) : (
             <Button
-              onClick={() => window.open("https://metamask.io/", "_blank")}
+              onClick={() => {
+                if (isMobile) {
+                  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                  const storeUrl = isIOS 
+                    ? "https://apps.apple.com/app/metamask/id1438144202"
+                    : "https://play.google.com/store/apps/details?id=io.metamask";
+                  window.open(storeUrl, "_blank");
+                } else {
+                  window.open("https://metamask.io/", "_blank");
+                }
+              }}
               variant="outline"
               className="border-white text-white hover:bg-white hover:text-red-600 transition-colors"
             >
               <Zap className="w-4 h-4 mr-2" />
-              Install MetaMask
+              {isMobile ? "Install MetaMask App" : "Install MetaMask"}
             </Button>
           )}
         </div>
+        
+        {isMobile && !isProduction && (
+          <div className="text-center mt-4">
+            <div className="text-xs text-yellow-200 bg-yellow-600/20 px-3 py-2 rounded-lg">
+              ⚠️ MetaMask mobile requiert HTTPS en production
+            </div>
+          </div>
+        )}
       </div>
     );
   }
