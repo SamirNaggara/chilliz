@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { participateInLotteryWithBlockchain } from "@/lib/blockchain-actions";
 
 export async function POST(request: NextRequest) {
+  console.log('🎯 API PARTICIPATION APPELÉE');
+  
   try {
     const body = await request.json();
-    const { contestId, jerseyId, walletAddress } = body;
+    const { contestId, jerseyId, walletAddress, username } = body;
+    
+    console.log('📥 Données reçues:', { contestId, jerseyId, walletAddress, username });
 
     // Validation des données
     if (!contestId || !jerseyId || !walletAddress) {
@@ -46,42 +51,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // On ne gère plus le cooldown si le champ n'existe pas
+    // 🚀 NOUVEAU: Utiliser la fonction blockchain pour la participation
+    console.log('🎲 Participation avec blockchain via API:', { contestId, jerseyId, walletAddress, username });
+    console.log('🚀 Appel de participateInLotteryWithBlockchain...');
+    
+    const blockchainResult = await participateInLotteryWithBlockchain(
+      contestId,
+      jerseyId,
+      walletAddress,
+      username
+    );
 
-    // Vérifier si l'utilisateur a déjà participé avec ce maillot
-    const existingParticipation = await prisma.participation.findUnique({
-      where: {
-        contest_wallet_jersey_unique: {
-          contestId,
-          walletAddress,
-          jerseyId,
-        },
-      },
+    console.log('📋 Résultat blockchain reçu:', {
+      success: blockchainResult.success,
+      error: blockchainResult.error,
+      transactionHash: blockchainResult.data?.blockchainTx || 'N/A'
     });
 
-    if (existingParticipation) {
+    if (!blockchainResult.success) {
+      console.log('❌ Échec blockchain:', blockchainResult.error);
       return NextResponse.json(
-        { error: "Vous avez déjà participé avec ce maillot" },
+        { error: blockchainResult.error },
         { status: 400 }
       );
     }
 
-    // Créer la participation
-    const participation = await prisma.participation.create({
-      data: {
-        contestId,
-        jerseyId,
-        walletAddress,
-      },
-    });
+    console.log('✅ Participation blockchain réussie!');
+    console.log('🌐 Hash de transaction:', blockchainResult.data.blockchainTx);
 
-    return NextResponse.json(
-      {
-        message: "Participation enregistrée avec succès",
-        participation,
-      },
-      { status: 201 }
-    );
+    // Retourner les données de participation avec les informations blockchain
+    const response = {
+      message: "Participation enregistrée avec succès",
+      participation: blockchainResult.data.participation,
+      blockchainTx: blockchainResult.data.blockchainTx,
+      explorerUrl: `https://spicy-explorer.chiliz.com/tx/${blockchainResult.data.blockchainTx}`
+    };
+    
+    console.log('📤 Réponse API:', response);
+
+    return NextResponse.json(response, { status: 201 });
   } catch (error) {
     console.error("Erreur lors de la participation:", error);
     return NextResponse.json(

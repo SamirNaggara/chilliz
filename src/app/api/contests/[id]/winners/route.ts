@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { announceWinnersWithBlockchain } from "@/lib/blockchain-actions";
 
 export async function POST(
   request: NextRequest,
@@ -72,37 +73,23 @@ export async function POST(
       );
     }
 
-    // Créer les gagnants et marquer le concours comme terminé
-    const result = await prisma.$transaction(async (tx) => {
-      // Créer tous les gagnants
-      const createdWinners = await Promise.all(
-        winners.map((winner) =>
-          tx.winner.create({
-            data: {
-              contestId: id,
-              walletAddress: winner.walletAddress,
-              prize: winner.prize,
-            },
-          })
-        )
-      );
+    // Utiliser la fonction blockchain pour annoncer les gagnants
+    const blockchainResult = await announceWinnersWithBlockchain(id, winners);
 
-      // Marquer le concours comme terminé
-      await tx.contest.update({
-        where: { id },
-        data: {
-          status: "FINISHED",
-          endedAt: new Date(),
-        },
+    if (blockchainResult.success) {
+      return NextResponse.json({
+        success: true,
+        message: "Gagnants sélectionnés avec succès",
+        winners: blockchainResult.data?.winners,
+        blockchainEvents: blockchainResult.data?.blockchainEvents,
+        explorerUrl: blockchainResult.explorerUrl,
       });
-
-      return createdWinners;
-    });
-
-    return NextResponse.json({
-      message: "Gagnants sélectionnés avec succès",
-      winners: result,
-    });
+    } else {
+      return NextResponse.json(
+        { error: blockchainResult.error },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error("Erreur lors de la sélection des gagnants:", error);
     return NextResponse.json(

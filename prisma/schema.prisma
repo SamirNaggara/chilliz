@@ -45,6 +45,11 @@ model Contest {
   winners     Winner[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+  
+  // Champs blockchain
+  blockchainEnabled Boolean @default(true) // Intégration blockchain activée
+  blockchainNetwork String @default("testnet") // testnet ou mainnet
+  blockchainEvents Json? // Historique des événements blockchain
 }
 
 model Participation {
@@ -57,6 +62,12 @@ model Participation {
   username    String?  // Nom d'utilisateur du participant
   participatedAt DateTime @default(now())
   
+  // Champs blockchain
+  blockchainTxHash String? // Hash de la transaction blockchain
+  blockchainTimestamp DateTime? // Timestamp blockchain
+  blockchainConfirmed Boolean @default(false) // Transaction confirmée on-chain
+  blockchainData Json? // Données additionnelles de la blockchain
+  
   @@unique([contestId, walletAddress, jerseyId], name: "contest_wallet_jersey_unique")
 }
 
@@ -67,6 +78,12 @@ model Winner {
   walletAddress String  // Adresse wallet du gagnant
   prize     String   // Description du prix gagné (ex: "10 $PSG Fan Tokens")
   wonAt     DateTime @default(now())
+  
+  // Champs blockchain
+  blockchainTxHash String? // Hash de la transaction d'annonce
+  blockchainTimestamp DateTime? // Timestamp blockchain
+  blockchainConfirmed Boolean @default(false) // Annonce confirmée on-chain
+  blockchainData Json? // Données de l'annonce blockchain
 }
 
 model JerseyDex {

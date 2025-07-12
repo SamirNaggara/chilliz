@@ -12,6 +12,7 @@ import {
   Gift,
 } from "lucide-react";
 import { participateInContest } from "@/lib/actions";
+import { BlockchainWidget } from "@/components/BlockchainWidget";
 
 interface Contest {
   id: string;
@@ -37,6 +38,8 @@ export function JerseyParticipation({
   const [result, setResult] = useState<{
     success: boolean;
     message: string;
+    transactionHash?: string;
+    blockchainTxHash?: string;
   } | null>(null);
   const [walletAddress, setWalletAddress] = useState("");
 
@@ -71,6 +74,8 @@ export function JerseyParticipation({
         setResult({
           success: true,
           message: "Participation enregistrée avec succès !",
+          transactionHash: response.blockchainTx,
+          blockchainTxHash: response.blockchainTx,
         });
         setWalletAddress("");
       } else {
@@ -202,23 +207,36 @@ export function JerseyParticipation({
           </Button>
 
           {result && (
-            <div
-              className={`p-4 rounded-lg border ${
-                result.success
-                  ? "bg-green-50 border-green-200 text-green-800"
-                  : "bg-red-50 border-red-200 text-red-800"
-              }`}
-            >
-              <div className="flex items-start gap-2">
-                {result.success ? (
-                  <CheckCircle className="w-5 h-5 mt-0.5 text-green-600" />
-                ) : (
-                  <XCircle className="w-5 h-5 mt-0.5 text-red-600" />
-                )}
-                <div className="flex-1">
-                  <p className="font-medium">{result.message}</p>
+            <div className="space-y-4">
+              <div
+                className={`p-4 rounded-lg border ${
+                  result.success
+                    ? "bg-green-50 border-green-200 text-green-800"
+                    : "bg-red-50 border-red-200 text-red-800"
+                }`}
+              >
+                <div className="flex items-start gap-2">
+                  {result.success ? (
+                    <CheckCircle className="w-5 h-5 mt-0.5 text-green-600" />
+                  ) : (
+                    <XCircle className="w-5 h-5 mt-0.5 text-red-600" />
+                  )}
+                  <div className="flex-1">
+                    <p className="font-medium">{result.message}</p>
+                  </div>
                 </div>
               </div>
+
+              {/* Widget Blockchain */}
+              {result.success && result.transactionHash && (
+                <BlockchainWidget
+                  transactionHash={result.transactionHash}
+                  contestId={activeContest?.id}
+                  type="participation"
+                  compact={false}
+                  showVerifyButton={true}
+                />
+              )}
             </div>
           )}
         </div>
