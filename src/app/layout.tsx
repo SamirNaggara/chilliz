@@ -15,9 +15,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "My fan space - PSG Jersey Scanner",
+  title: "FanScan - PSG Jersey Scanner",
   description:
     "Scannez vos maillots PSG authentiques et participez aux concours",
+  icons: {
+    icon: "/fanscan_logo.png",
+    apple: "/fanscan_logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -27,6 +31,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/fanscan_logo.png" />
+        <link rel="apple-touch-icon" href="/fanscan_logo.png" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

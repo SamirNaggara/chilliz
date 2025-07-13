@@ -1,6 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
 import { JerseyWalletConnector } from "@/components/JerseyWalletConnector";
-import { Shield } from "lucide-react";
 
 export function JerseyHeader() {
   return (
@@ -11,8 +11,14 @@ export function JerseyHeader() {
             href="/jerseydex"
             className="flex items-center gap-3 hover:opacity-80 transition-opacity"
           >
-            <div className="w-8 h-8 bg-gradient-to-r from-red-600 to-blue-600 rounded-full flex items-center justify-center">
-              <Shield className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 relative">
+              <Image
+                src="/fanscan_logo.png"
+                alt="FanScan Logo"
+                width={32}
+                height={32}
+                className="rounded-full"
+              />
             </div>
             <span className="font-bold text-lg text-gray-800">
               My fan space
