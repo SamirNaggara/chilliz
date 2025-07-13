@@ -134,7 +134,6 @@ export default async function Home() {
                           src={jersey.assetUrl}
                           className="w-24 h-24 object-contain mx-auto mb-2 rounded shadow"
                           controls
-                          poster="/jerseys/default-jersey.svg"
                         />
                       ) : (
                         <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded mb-2 mx-auto"></div>
