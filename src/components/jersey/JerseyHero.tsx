@@ -48,6 +48,10 @@ export function JerseyHero({
               <video
                 src={assetUrl || "/jerseys/default-jersey.svg"}
                 className="mx-auto max-h-96 rounded-xl shadow-lg"
+                autoPlay
+                loop
+                muted
+                playsInline
               />
             ) : (
               <img
