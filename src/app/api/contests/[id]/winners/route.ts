@@ -33,9 +33,9 @@ export async function POST(
       );
     }
 
-    if (contest.status !== "ACTIVE") {
+    if (contest.status !== "ACTIVE" && contest.status !== "FINISHED") {
       return NextResponse.json(
-        { error: "Le concours n'est plus actif" },
+        { error: "Le concours doit être actif ou terminé pour sélectionner des gagnants" },
         { status: 400 }
       );
     }

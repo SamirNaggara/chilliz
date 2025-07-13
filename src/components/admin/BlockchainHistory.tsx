@@ -69,8 +69,14 @@ export function BlockchainHistory({ contestId }: BlockchainHistoryProps) {
     fetchHistory();
   }, [contestId]);
 
-  const getEventTypeLabel = (type: string) => {
-    return type === 'LOTTERY_PARTICIPATION' ? 'Participation' : 'Annonce gagnant';
+  const getEventTypeLabel = (type: string, data: any) => {
+    if (type === 'LOTTERY_PARTICIPATION') {
+      // Distinguer les participations avec co-signature
+      return data?.type === 'LOTTERY_PARTICIPATION_CO_SIGNED' 
+        ? 'Participation (Co-signée)' 
+        : 'Participation';
+    }
+    return 'Annonce gagnant';
   };
 
   const getEventIcon = (type: string) => {
@@ -192,11 +198,16 @@ export function BlockchainHistory({ contestId }: BlockchainHistoryProps) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-medium text-sm">
-                          {getEventTypeLabel(event.type)}
+                          {getEventTypeLabel(event.type, event.data)}
                         </span>
                         <Badge variant="secondary" className="text-xs">
                           {blockchainUtils.formatTimestamp(event.timestamp)}
                         </Badge>
+                        {event.data?.type === 'LOTTERY_PARTICIPATION_CO_SIGNED' && (
+                          <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800">
+                            🤝 Co-signée
+                          </Badge>
+                        )}
                       </div>
                       
                       <div className="text-xs text-gray-600 space-y-1">
@@ -217,11 +228,31 @@ export function BlockchainHistory({ contestId }: BlockchainHistoryProps) {
                           </div>
                         )}
 
+                        {event.type === 'WINNER_ANNOUNCEMENT' && event.data.username && (
+                          <div>
+                            <span className="font-medium">Gagnant:</span> {event.data.username}
+                          </div>
+                        )}
+
                         {event.transactionHash && (
                           <div className="flex items-center gap-1">
                             <span className="font-medium">TX:</span>
                             <span className="font-mono">
-                              {blockchainUtils.formatAddress(event.transactionHash)}
+                              {blockchainUtils.formatTxHash(event.transactionHash)}
+                            </span>
+                            {event.data.blockchainConfirmed && (
+                              <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+                                ✓ Confirmé
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+
+                        {event.data?.type === 'LOTTERY_PARTICIPATION_CO_SIGNED' && event.data?.serverSigner && (
+                          <div className="flex items-center gap-1">
+                            <span className="font-medium">Serveur:</span>
+                            <span className="font-mono text-xs">
+                              {blockchainUtils.formatAddress(event.data.serverSigner)}
                             </span>
                           </div>
                         )}

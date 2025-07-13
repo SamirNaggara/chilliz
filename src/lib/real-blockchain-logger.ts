@@ -119,24 +119,71 @@ class SimpleChilizLogger implements SimpleBlockchainLogger {
     return result;
   }
 
-  // Créer une transaction pour l'annonce d'un gagnant
+  // Créer une annonce de gagnant sur blockchain
   async createWinnerAnnouncement(
     contestId: string,
     winnerAddress: string,
     prize: string,
-    rank: number
-  ) {
-    const winnerData = {
-      type: 'WINNER_ANNOUNCEMENT',
-      contestId,
-      winnerAddress,
-      prize,
-      rank,
-      timestamp: Math.floor(Date.now() / 1000),
-      platform: 'FanScan-Chiliz-Hackathon'
-    };
+    rank: number,
+    username?: string
+  ): Promise<{
+    success: boolean;
+    transactionHash?: string;
+    error?: string;
+    receipt?: any;
+  }> {
+    console.log('🏆 DÉBUT createWinnerAnnouncement');
+    console.log('📋 Paramètres:', { contestId, winnerAddress, prize, rank, username });
 
-    return await this.createRealTransaction(winnerData);
+    if (!this.signer) {
+      return {
+        success: false,
+        error: 'Signer blockchain non configuré'
+      };
+    }
+
+    try {
+      // Données de l'annonce de gagnant avec nom d'utilisateur
+      const announcementData = {
+        type: 'WINNER_ANNOUNCEMENT',
+        contestId,
+        winnerAddress,
+        prize,
+        rank,
+        username, // 🆕 Ajout du nom d'utilisateur
+        timestamp: Math.floor(Date.now() / 1000),
+        network: 'chiliz-spicy-testnet'
+      };
+
+      console.log('📝 Données annonce:', announcementData);
+
+      // Créer et envoyer la transaction
+      const transaction = await this.signer!.sendTransaction({
+        to: winnerAddress, // Envoyer vers l'adresse du gagnant
+        value: 0, // Pas de transfert de valeur
+        data: ethers.hexlify(ethers.toUtf8Bytes(JSON.stringify(announcementData))),
+        gasLimit: 25000 // Gas pour les données
+      });
+
+      console.log('📡 Transaction envoyée:', transaction.hash);
+
+      // Attendre la confirmation
+      const receipt = await transaction.wait();
+      console.log('✅ Transaction confirmée bloc:', receipt?.blockNumber);
+
+      return {
+        success: true,
+        transactionHash: transaction.hash,
+        receipt
+      };
+
+    } catch (error) {
+      console.error('❌ Erreur createWinnerAnnouncement:', error);
+      return {
+        success: false,
+        error: `Erreur: ${error}`
+      };
+    }
   }
 
   // Vérifier si une transaction existe vraiment

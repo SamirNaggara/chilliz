@@ -4,7 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, CheckCircle, Clock, Gift } from "lucide-react";
-import { participateInContest, checkParticipation } from "@/lib/actions";
+import {
+  participateInContest,
+  checkParticipation,
+} from "@/lib/actions";
+import { participateWithClientSignature } from "@/lib/client-co-signature";
 import { useAccount } from "wagmi";
 import { BlockchainStatus } from "@/components/BlockchainStatus";
 
@@ -99,18 +103,35 @@ export function JerseyContestParticipation({
     setResult(null);
 
     try {
-      const response = await participateInContest(
-        activeContest.id,
-        jerseyId,
-        walletAddress.trim(),
-        username.trim()
-      );
+      let response: any;
+      
+      if (isConnected && address) {
+        // Utiliser OBLIGATOIREMENT la méthode de co-signature (plus transparente)
+        console.log("🤝 Utilisation obligatoire de la co-signature pour la participation");
+        response = await participateWithClientSignature(
+          activeContest.id,
+          jerseyId,
+          address, // Utiliser l'adresse connectée
+          username.trim()
+        );
+      } else {
+        // Fallback uniquement si pas de wallet connecté
+        console.log("📝 Fallback: méthode classique (wallet non connecté)");
+        response = await participateInContest(
+          activeContest.id,
+          jerseyId,
+          walletAddress.trim(),
+          username.trim()
+        );
+      }
 
       if (response.success) {
         setResult({
           success: true,
-          message: "Participation registered successfully!",
-          blockchainTx: response.blockchainTx,
+          message: isConnected && address
+            ? "Participation registered with blockchain co-signature!" 
+            : "Participation registered successfully!",
+          blockchainTx: response.transactionHash || response.blockchainTx,
           explorerUrl: response.explorerUrl,
         });
         setWalletAddress("");
@@ -121,10 +142,11 @@ export function JerseyContestParticipation({
           message: response.error || "Error during participation",
         });
       }
-    } catch {
+    } catch (error: any) {
+      console.error("Erreur participation:", error);
       setResult({
         success: false,
-        message: "Connection error",
+        message: error?.message || "Connection error",
       });
     } finally {
       setIsLoading(false);

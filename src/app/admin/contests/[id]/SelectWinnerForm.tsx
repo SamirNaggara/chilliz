@@ -71,6 +71,19 @@ export function SelectWinnerForm({
   ];
 
   const selectRandomWinners = async () => {
+    // Vérification préalable
+    if (participations.length === 0) {
+      alert("Aucun participant dans ce concours. Impossible de sélectionner des gagnants.");
+      return;
+    }
+
+    if (participations.length < 3) {
+      const confirmed = confirm(
+        `Il n'y a que ${participations.length} participant(s). Voulez-vous continuer avec moins de 3 gagnants ?`
+      );
+      if (!confirmed) return;
+    }
+
     setIsSelecting(true);
 
     // Simuler un délai pour l'effet de suspense
@@ -80,8 +93,9 @@ export function SelectWinnerForm({
     const availableParticipants = [...participations];
     const winners = [];
 
-    // Sélectionner 3 gagnants aléatoirement
-    for (let i = 0; i < 3 && availableParticipants.length > 0; i++) {
+    // Sélectionner jusqu'à 3 gagnants (ou moins si pas assez de participants)
+    const maxWinners = Math.min(3, availableParticipants.length);
+    for (let i = 0; i < maxWinners; i++) {
       const randomIndex = Math.floor(
         Math.random() * availableParticipants.length
       );
@@ -99,8 +113,9 @@ export function SelectWinnerForm({
     setShowResults(true);
     setIsSelecting(false);
 
-    // Enregistrer immédiatement les gagnants en base
+    // Enregistrer immédiatement les gagnants en base ET sur blockchain
     try {
+      console.log("🏆 Envoi des gagnants vers l'API blockchain...");
       const response = await fetch(`/api/contests/${contestId}/winners`, {
         method: "POST",
         headers: {
@@ -110,24 +125,37 @@ export function SelectWinnerForm({
           winners: winners.map((w) => ({
             walletAddress: w.walletAddress,
             prize: w.prize,
+            rank: w.rank,
           })),
         }),
       });
 
+      const result = await response.json();
+      console.log("📋 Réponse API:", result);
+
       if (response.ok) {
-        // Recharger la page pour afficher les gagnants
+        alert(
+          `✅ Gagnants sélectionnés avec succès!\n` +
+          `💾 Enregistrés en base de données\n` +
+          `🔗 ${result.blockchainTransactions?.length || 0} transaction(s) blockchain créée(s)\n` +
+          `🌐 Visible dans l'historique blockchain`
+        );
+        
+        // Recharger la page pour afficher les gagnants et mettre à jour l'historique
         router.refresh();
       } else {
-        const errorData = await response.json();
+        console.error("❌ Erreur API:", result);
         alert(
-          `Erreur: ${
-            errorData.error || "Erreur lors de la sauvegarde des gagnants"
-          }`
+          `❌ Erreur lors de la sélection:\n${
+            result.error || "Erreur inconnue"
+          }\n\nVérifiez la console pour plus de détails.`
         );
       }
     } catch (error) {
-      console.error("Erreur:", error);
-      alert("Erreur lors de la sauvegarde des gagnants");
+      console.error("❌ Erreur réseau:", error);
+      alert(
+        `❌ Erreur de connexion:\n${error}\n\nVérifiez que le serveur est actif et réessayez.`
+      );
     }
   };
 

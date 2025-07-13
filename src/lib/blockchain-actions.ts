@@ -128,47 +128,107 @@ export async function announceWinnersWithBlockchain(
   }>
 ): Promise<BlockchainActionResult> {
   try {
-    console.log('🏆 Annonce gagnants avec blockchain:', { contestId, winners });
+    console.log('🏆 ANNONCE GAGNANTS AVEC BLOCKCHAIN OBLIGATOIRE');
+    console.log('📊 Paramètres:', { contestId, winners });
 
-    const blockchainEvents: BlockchainEvent[] = [];
+    // 🆕 Récupérer les noms d'utilisateur depuis les participations
+    const participations = await prisma.participation.findMany({
+      where: { 
+        contestId,
+        walletAddress: {
+          in: winners.map(w => w.walletAddress)
+        }
+      },
+      select: {
+        walletAddress: true,
+        username: true
+      }
+    });
+
+    console.log('👥 Noms d\'utilisateur récupérés:', participations);
+
+    const blockchainTransactions: Array<{
+      winner: any;
+      transactionHash: string;
+      explorerUrl: string;
+    }> = [];
     const timestamp = Math.floor(Date.now() / 1000);
 
-    // 1. Enregistrer chaque gagnant on-chain
+    // 1. Créer une VRAIE transaction blockchain pour CHAQUE gagnant
     for (let i = 0; i < winners.length; i++) {
       const winner = winners[i];
-      const announcementData: WinnerAnnouncement = {
-        contestId,
-        winnerAddress: winner.walletAddress,
-        prize: winner.prize,
-        rank: winner.rank || (i + 1),
-        timestamp,
-      };
+      
+      // 🆕 Trouver le nom d'utilisateur correspondant
+      const participation = participations.find(p => p.walletAddress === winner.walletAddress);
+      const username = participation?.username;
+      
+      console.log(`🏆 Annonce gagnant ${i + 1}/${winners.length} sur blockchain...`);
+      console.log(`📝 Gagnant: ${winner.walletAddress} (${username || 'Anonyme'}) - Prix: ${winner.prize}`);
 
       try {
-        const blockchainEvent = await chilizBlockchain.announceWinner(announcementData);
-        blockchainEvents.push(blockchainEvent);
-        console.log(`✅ Gagnant ${i + 1} annoncé on-chain:`, blockchainEvent);
+        // Utiliser realChilizLogger pour créer une vraie transaction avec le nom
+        const blockchainResult = await realChilizLogger.createWinnerAnnouncement(
+          contestId,
+          winner.walletAddress,
+          winner.prize,
+          winner.rank || (i + 1),
+          username || undefined // 🆕 Passer le nom d'utilisateur (gérer null)
+        );
+
+        if (blockchainResult.success && blockchainResult.transactionHash) {
+          console.log(`✅ Gagnant ${i + 1} annoncé sur blockchain:`, blockchainResult.transactionHash);
+          console.log(`🌐 Explorer: https://spicy-explorer.chiliz.com/tx/${blockchainResult.transactionHash}`);
+          
+          blockchainTransactions.push({
+            winner,
+            transactionHash: blockchainResult.transactionHash,
+            explorerUrl: `https://spicy-explorer.chiliz.com/tx/${blockchainResult.transactionHash}`
+          });
+        } else {
+          console.error(`❌ Erreur blockchain gagnant ${i + 1}:`, blockchainResult.error);
+          // On continue même si une transaction échoue
+        }
       } catch (blockchainError) {
         console.error(`❌ Erreur blockchain gagnant ${i + 1}:`, blockchainError);
-        // Continue avec les autres gagnants
+        // On continue même si une transaction échoue
       }
     }
 
-    // 2. Enregistrer les gagnants en base de données
+    console.log(`📡 ${blockchainTransactions.length}/${winners.length} transactions blockchain créées`);
+
+    // 2. Enregistrer les gagnants en base de données avec les vrais hashes
     const result = await prisma.$transaction(async (tx) => {
-      // Créer tous les gagnants
+      // Créer tous les gagnants avec leurs hash blockchain
       const createdWinners = await Promise.all(
-        winners.map((winner, index) =>
-          tx.winner.create({
+        winners.map((winner, index) => {
+          const blockchainTx = blockchainTransactions[index];
+          
+          // 🆕 Récupérer le nom d'utilisateur pour ce gagnant
+          const participation = participations.find(p => p.walletAddress === winner.walletAddress);
+          const username = participation?.username;
+          
+          return tx.winner.create({
             data: {
               contestId,
               walletAddress: winner.walletAddress,
               prize: winner.prize,
-              // Ajouter hash blockchain si disponible
-              // blockchainTxHash: blockchainEvents[index]?.transactionHash,
+              // Champs blockchain avec vraie transaction
+              blockchainTxHash: blockchainTx?.transactionHash || null,
+              blockchainTimestamp: blockchainTx ? new Date() : null,
+              blockchainConfirmed: !!blockchainTx,
+              blockchainData: blockchainTx ? {
+                type: 'WINNER_ANNOUNCEMENT',
+                contestId,
+                winnerAddress: winner.walletAddress,
+                prize: winner.prize,
+                rank: winner.rank || (index + 1),
+                username, // 🆕 Ajouter le nom d'utilisateur dans blockchainData
+                timestamp,
+                explorerUrl: blockchainTx.explorerUrl
+              } : undefined
             },
-          })
-        )
+          });
+        })
       );
 
       // Marquer le concours comme terminé
@@ -180,17 +240,18 @@ export async function announceWinnersWithBlockchain(
       return createdWinners;
     });
 
+    console.log('💾 Tous les gagnants enregistrés en base avec blockchain');
+
     // 3. Retourner le succès avec toutes les informations blockchain
     return {
       success: true,
       data: {
         winners: result,
-        blockchainEvents,
+        blockchainTransactions,
+        totalBlockchainTx: blockchainTransactions.length,
       },
-      transactionHash: blockchainEvents[0]?.transactionHash,
-      explorerUrl: blockchainEvents[0]?.transactionHash 
-        ? chilizBlockchain.getExplorerUrl(blockchainEvents[0].transactionHash)
-        : undefined,
+      transactionHash: blockchainTransactions[0]?.transactionHash,
+      explorerUrl: blockchainTransactions[0]?.explorerUrl,
     };
 
   } catch (error) {
@@ -257,7 +318,7 @@ export async function getContestBlockchainHistory(contestId: string): Promise<{
       };
     }
 
-    // Simuler les événements blockchain basés sur les données DB
+    // Utiliser les vraies données blockchain stockées en base
     const participations: BlockchainEvent[] = contest.participations.map(p => ({
       type: 'LOTTERY_PARTICIPATION' as const,
       contestId,
@@ -266,9 +327,13 @@ export async function getContestBlockchainHistory(contestId: string): Promise<{
         jerseyId: p.jerseyId,
         username: p.username,
         participatedAt: p.participatedAt,
+        blockchainConfirmed: p.blockchainConfirmed,
+        blockchainData: p.blockchainData,
       },
-      timestamp: Math.floor(p.participatedAt.getTime() / 1000),
-      transactionHash: `0x${Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('')}`, // Simulé
+      timestamp: p.blockchainTimestamp 
+        ? Math.floor(p.blockchainTimestamp.getTime() / 1000)
+        : Math.floor(p.participatedAt.getTime() / 1000),
+      transactionHash: p.blockchainTxHash || undefined,
     }));
 
     const winners: BlockchainEvent[] = contest.winners.map(w => ({
@@ -278,9 +343,13 @@ export async function getContestBlockchainHistory(contestId: string): Promise<{
       data: {
         prize: w.prize,
         wonAt: w.wonAt,
+        blockchainConfirmed: w.blockchainConfirmed,
+        blockchainData: w.blockchainData,
       },
-      timestamp: Math.floor(w.wonAt.getTime() / 1000),
-      transactionHash: `0x${Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('')}`, // Simulé
+      timestamp: w.blockchainTimestamp 
+        ? Math.floor(w.blockchainTimestamp.getTime() / 1000)
+        : Math.floor(w.wonAt.getTime() / 1000),
+      transactionHash: w.blockchainTxHash || undefined,
     }));
 
     return {
