@@ -6,17 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Search, 
-  ExternalLink, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Search,
+  ExternalLink,
+  CheckCircle,
+  XCircle,
   Clock,
   Trophy,
   Users,
   Copy,
   RefreshCw,
-  Eye
+  Eye,
 } from "lucide-react";
 import { blockchainUtils } from "@/lib/chiliz-blockchain";
 
@@ -63,7 +63,8 @@ export function BlockchainVerifier() {
   const [transactionHash, setTransactionHash] = useState("");
   const [contestId, setContestId] = useState("");
   const [loading, setLoading] = useState(false);
-  const [transactionData, setTransactionData] = useState<TransactionData | null>(null);
+  const [transactionData, setTransactionData] =
+    useState<TransactionData | null>(null);
   const [historyData, setHistoryData] = useState<HistoryData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,7 +80,9 @@ export function BlockchainVerifier() {
     setTransactionData(null);
 
     try {
-      const response = await fetch(`/api/blockchain/inspect/${transactionHash}`);
+      const response = await fetch(
+        `/api/blockchain/inspect/${transactionHash}`
+      );
       const result = await response.json();
 
       if (result.success) {
@@ -117,7 +120,9 @@ export function BlockchainVerifier() {
     setHistoryData(null);
 
     try {
-      const response = await fetch(`/api/blockchain/contests/${contestId}/history`);
+      const response = await fetch(
+        `/api/blockchain/contests/${contestId}/history`
+      );
       const result = await response.json();
 
       if (result.success) {
@@ -140,7 +145,7 @@ export function BlockchainVerifier() {
   // Ouvrir dans l'explorateur
   const openInExplorer = (hash: string) => {
     const url = blockchainUtils.getExplorerLink(hash);
-    window.open(url, '_blank');
+    window.open(url, "_blank");
   };
 
   return (
@@ -153,7 +158,8 @@ export function BlockchainVerifier() {
             Vérificateur Blockchain Chiliz
           </CardTitle>
           <p className="text-sm text-gray-600">
-            Vérifiez la transparence et l'authenticité des données de loterie enregistrées sur la blockchain Chiliz
+            Vérifiez la transparence et l'authenticité des données de loterie
+            enregistrées sur la blockchain Chiliz
           </p>
         </CardHeader>
       </Card>
@@ -175,9 +181,12 @@ export function BlockchainVerifier() {
         <TabsContent value="transaction" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Vérifier une Transaction</CardTitle>
+              <CardTitle className="text-lg">
+                Vérifier une Transaction
+              </CardTitle>
               <p className="text-sm text-gray-600">
-                Entrez le hash d'une transaction pour voir toutes les données de loterie
+                Entrez le hash d'une transaction pour voir toutes les données de
+                loterie
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -188,7 +197,7 @@ export function BlockchainVerifier() {
                   onChange={(e) => setTransactionHash(e.target.value)}
                   className="font-mono text-sm"
                 />
-                <Button 
+                <Button
                   onClick={verifyTransaction}
                   disabled={loading}
                   className="flex items-center gap-2"
@@ -226,41 +235,65 @@ export function BlockchainVerifier() {
                     <CardContent className="space-y-3">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="text-sm font-medium text-gray-700">Hash</label>
+                          <label className="text-sm font-medium text-gray-700">
+                            Hash
+                          </label>
                           <div className="flex items-center gap-2 mt-1">
                             <span className="text-xs font-mono bg-white px-2 py-1 rounded border">
-                              {blockchainUtils.formatTxHash(transactionData.hash)}
+                              {blockchainUtils.formatTxHash(
+                                transactionData.hash
+                              )}
                             </span>
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => copyToClipboard(transactionData.hash)}
+                              onClick={() =>
+                                copyToClipboard(transactionData.hash)
+                              }
                             >
                               <Copy className="w-3 h-3" />
                             </Button>
                           </div>
                         </div>
-                        
-                        <div>
-                          <label className="text-sm font-medium text-gray-700">Block</label>
-                          <div className="mt-1">
-                            <Badge variant="secondary">#{transactionData.blockNumber}</Badge>
-                          </div>
-                        </div>
 
                         <div>
-                          <label className="text-sm font-medium text-gray-700">Statut</label>
+                          <label className="text-sm font-medium text-gray-700">
+                            Block
+                          </label>
                           <div className="mt-1">
-                            <Badge className={transactionData.status === 1 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
-                              {transactionData.status === 1 ? "✅ Succès" : "❌ Échec"}
+                            <Badge variant="secondary">
+                              #{transactionData.blockNumber}
                             </Badge>
                           </div>
                         </div>
 
                         <div>
-                          <label className="text-sm font-medium text-gray-700">Timestamp</label>
+                          <label className="text-sm font-medium text-gray-700">
+                            Statut
+                          </label>
+                          <div className="mt-1">
+                            <Badge
+                              className={
+                                transactionData.status === 1
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-red-100 text-red-800"
+                              }
+                            >
+                              {transactionData.status === 1
+                                ? "✅ Succès"
+                                : "❌ Échec"}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-sm font-medium text-gray-700">
+                            Timestamp
+                          </label>
                           <div className="mt-1 text-sm">
-                            {blockchainUtils.formatTimestamp(transactionData.timestamp)}
+                            {blockchainUtils.formatTimestamp(
+                              transactionData.timestamp
+                            )}
                           </div>
                         </div>
                       </div>
@@ -284,7 +317,8 @@ export function BlockchainVerifier() {
                     <Card className="border-blue-200 bg-blue-50">
                       <CardHeader className="pb-3">
                         <CardTitle className="flex items-center gap-2 text-blue-800">
-                          {transactionData.data.type === 'LOTTERY_PARTICIPATION' ? (
+                          {transactionData.data.type ===
+                          "LOTTERY_PARTICIPATION" ? (
                             <Users className="w-5 h-5" />
                           ) : (
                             <Trophy className="w-5 h-5" />
@@ -295,70 +329,98 @@ export function BlockchainVerifier() {
                       <CardContent className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <label className="text-sm font-medium text-gray-700">Type</label>
+                            <label className="text-sm font-medium text-gray-700">
+                              Type
+                            </label>
                             <div className="mt-1">
-                              <Badge className={
-                                transactionData.data.type === 'LOTTERY_PARTICIPATION' 
-                                  ? "bg-blue-100 text-blue-800" 
-                                  : "bg-yellow-100 text-yellow-800"
-                              }>
-                                {transactionData.data.type === 'LOTTERY_PARTICIPATION' 
-                                  ? '🎲 Participation' 
-                                  : '🏆 Annonce Gagnant'}
+                              <Badge
+                                className={
+                                  transactionData.data.type ===
+                                  "LOTTERY_PARTICIPATION"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : "bg-yellow-100 text-yellow-800"
+                                }
+                              >
+                                {transactionData.data.type ===
+                                "LOTTERY_PARTICIPATION"
+                                  ? "🎲 Participation"
+                                  : "🏆 Annonce Gagnant"}
                               </Badge>
                             </div>
                           </div>
 
                           <div>
-                            <label className="text-sm font-medium text-gray-700">Contest ID</label>
+                            <label className="text-sm font-medium text-gray-700">
+                              Contest ID
+                            </label>
                             <div className="mt-1 text-sm font-mono bg-white px-2 py-1 rounded border">
                               {transactionData.data.contestId}
                             </div>
                           </div>
 
-                          {transactionData.data.type === 'LOTTERY_PARTICIPATION' && (
+                          {transactionData.data.type ===
+                            "LOTTERY_PARTICIPATION" && (
                             <>
                               <div>
-                                <label className="text-sm font-medium text-gray-700">Participant</label>
+                                <label className="text-sm font-medium text-gray-700">
+                                  Participant
+                                </label>
                                 <div className="mt-1 text-sm font-mono bg-white px-2 py-1 rounded border">
-                                  {blockchainUtils.formatAddress(transactionData.data.participantAddress || '')}
+                                  {blockchainUtils.formatAddress(
+                                    transactionData.data.participantAddress ||
+                                      ""
+                                  )}
                                 </div>
                               </div>
 
                               <div>
-                                <label className="text-sm font-medium text-gray-700">Jersey ID</label>
+                                <label className="text-sm font-medium text-gray-700">
+                                  Jersey ID
+                                </label>
                                 <div className="mt-1 text-sm bg-white px-2 py-1 rounded border">
                                   {transactionData.data.jerseyId}
                                 </div>
                               </div>
 
                               <div>
-                                <label className="text-sm font-medium text-gray-700">Username</label>
+                                <label className="text-sm font-medium text-gray-700">
+                                  Username
+                                </label>
                                 <div className="mt-1 text-sm bg-white px-2 py-1 rounded border">
-                                  {transactionData.data.username || 'Non spécifié'}
+                                  {transactionData.data.username ||
+                                    "Non spécifié"}
                                 </div>
                               </div>
                             </>
                           )}
 
-                          {transactionData.data.type === 'WINNER_ANNOUNCEMENT' && (
+                          {transactionData.data.type ===
+                            "WINNER_ANNOUNCEMENT" && (
                             <>
                               <div>
-                                <label className="text-sm font-medium text-gray-700">Gagnant</label>
+                                <label className="text-sm font-medium text-gray-700">
+                                  Gagnant
+                                </label>
                                 <div className="mt-1 text-sm font-mono bg-white px-2 py-1 rounded border">
-                                  {blockchainUtils.formatAddress(transactionData.data.winnerAddress || '')}
+                                  {blockchainUtils.formatAddress(
+                                    transactionData.data.winnerAddress || ""
+                                  )}
                                 </div>
                               </div>
 
                               <div>
-                                <label className="text-sm font-medium text-gray-700">Prix</label>
+                                <label className="text-sm font-medium text-gray-700">
+                                  Prix
+                                </label>
                                 <div className="mt-1 text-sm bg-white px-2 py-1 rounded border">
                                   {transactionData.data.prize}
                                 </div>
                               </div>
 
                               <div>
-                                <label className="text-sm font-medium text-gray-700">Rang</label>
+                                <label className="text-sm font-medium text-gray-700">
+                                  Rang
+                                </label>
                                 <div className="mt-1">
                                   <Badge className="bg-yellow-100 text-yellow-800">
                                     {transactionData.data.rank}
@@ -391,7 +453,9 @@ export function BlockchainVerifier() {
         <TabsContent value="history" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Historique d'un Concours</CardTitle>
+              <CardTitle className="text-lg">
+                Historique d'un Concours
+              </CardTitle>
               <p className="text-sm text-gray-600">
                 Voir tous les événements blockchain d'un concours spécifique
               </p>
@@ -403,7 +467,7 @@ export function BlockchainVerifier() {
                   value={contestId}
                   onChange={(e) => setContestId(e.target.value)}
                 />
-                <Button 
+                <Button
                   onClick={fetchContestHistory}
                   disabled={loading}
                   className="flex items-center gap-2"
@@ -437,8 +501,12 @@ export function BlockchainVerifier() {
                         <div className="flex items-center gap-2">
                           <Users className="w-5 h-5 text-blue-600" />
                           <div>
-                            <div className="text-sm font-medium text-blue-800">Participations</div>
-                            <div className="text-2xl font-bold text-blue-900">{historyData.participations.length}</div>
+                            <div className="text-sm font-medium text-blue-800">
+                              Participations
+                            </div>
+                            <div className="text-2xl font-bold text-blue-900">
+                              {historyData.participations.length}
+                            </div>
                           </div>
                         </div>
                       </CardContent>
@@ -449,8 +517,12 @@ export function BlockchainVerifier() {
                         <div className="flex items-center gap-2">
                           <Trophy className="w-5 h-5 text-yellow-600" />
                           <div>
-                            <div className="text-sm font-medium text-yellow-800">Gagnants</div>
-                            <div className="text-2xl font-bold text-yellow-900">{historyData.winners.length}</div>
+                            <div className="text-sm font-medium text-yellow-800">
+                              Gagnants
+                            </div>
+                            <div className="text-2xl font-bold text-yellow-900">
+                              {historyData.winners.length}
+                            </div>
                           </div>
                         </div>
                       </CardContent>
@@ -461,8 +533,12 @@ export function BlockchainVerifier() {
                         <div className="flex items-center gap-2">
                           <CheckCircle className="w-5 h-5 text-green-600" />
                           <div>
-                            <div className="text-sm font-medium text-green-800">Total Événements</div>
-                            <div className="text-2xl font-bold text-green-900">{historyData.totalEvents}</div>
+                            <div className="text-sm font-medium text-green-800">
+                              Total Événements
+                            </div>
+                            <div className="text-2xl font-bold text-green-900">
+                              {historyData.totalEvents}
+                            </div>
                           </div>
                         </div>
                       </CardContent>
@@ -472,7 +548,9 @@ export function BlockchainVerifier() {
                   {/* Timeline des événements */}
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-lg">Timeline des Événements</CardTitle>
+                      <CardTitle className="text-lg">
+                        Timeline des Événements
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -483,58 +561,89 @@ export function BlockchainVerifier() {
                               key={`${event.type}-${event.walletAddress}-${index}`}
                               className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border"
                             >
-                              <div className={`p-2 rounded-full ${
-                                event.type === 'LOTTERY_PARTICIPATION' 
-                                  ? 'bg-blue-100 text-blue-600' 
-                                  : 'bg-yellow-100 text-yellow-600'
-                              }`}>
-                                {event.type === 'LOTTERY_PARTICIPATION' ? (
+                              <div
+                                className={`p-2 rounded-full ${
+                                  event.type === "LOTTERY_PARTICIPATION"
+                                    ? "bg-blue-100 text-blue-600"
+                                    : "bg-yellow-100 text-yellow-600"
+                                }`}
+                              >
+                                {event.type === "LOTTERY_PARTICIPATION" ? (
                                   <Users className="w-4 h-4" />
                                 ) : (
                                   <Trophy className="w-4 h-4" />
                                 )}
                               </div>
-                              
+
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-2">
-                                  <Badge variant="secondary" className="text-xs">
-                                    {event.type === 'LOTTERY_PARTICIPATION' ? 'Participation' : 'Gagnant'}
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-xs"
+                                  >
+                                    {event.type === "LOTTERY_PARTICIPATION"
+                                      ? "Participation"
+                                      : "Gagnant"}
                                   </Badge>
                                   <span className="text-xs text-gray-500">
-                                    {blockchainUtils.formatTimestamp(event.timestamp)}
+                                    {blockchainUtils.formatTimestamp(
+                                      event.timestamp
+                                    )}
                                   </span>
                                 </div>
-                                
+
                                 <div className="text-sm space-y-1">
                                   <div>
                                     <span className="font-medium">Wallet:</span>{" "}
                                     <span className="font-mono text-xs">
-                                      {blockchainUtils.formatAddress(event.walletAddress)}
+                                      {blockchainUtils.formatAddress(
+                                        event.walletAddress
+                                      )}
                                     </span>
                                   </div>
-                                  
+
+                                  {event.type === "LOTTERY_PARTICIPATION" &&
+                                    event.data.username && (
+                                      <div>
+                                        <span className="font-medium">
+                                          Utilisateur:
+                                        </span>{" "}
+                                        {event.data.username}
+                                      </div>
+                                    )}
+
                                   {event.data.jerseyId && (
                                     <div>
-                                      <span className="font-medium">Jersey:</span> {event.data.jerseyId}
+                                      <span className="font-medium">
+                                        Jersey:
+                                      </span>{" "}
+                                      {event.data.jerseyId}
                                     </div>
                                   )}
-                                  
+
                                   {event.data.prize && (
                                     <div>
-                                      <span className="font-medium">Prix:</span> {event.data.prize}
+                                      <span className="font-medium">Prix:</span>{" "}
+                                      {event.data.prize}
                                     </div>
                                   )}
 
                                   {event.transactionHash && (
                                     <div className="flex items-center gap-2 mt-2">
-                                      <span className="text-xs font-medium">TX:</span>
+                                      <span className="text-xs font-medium">
+                                        TX:
+                                      </span>
                                       <span className="text-xs font-mono bg-white px-1 py-0.5 rounded">
-                                        {blockchainUtils.formatTxHash(event.transactionHash)}
+                                        {blockchainUtils.formatTxHash(
+                                          event.transactionHash
+                                        )}
                                       </span>
                                       <Button
                                         size="sm"
                                         variant="outline"
-                                        onClick={() => openInExplorer(event.transactionHash)}
+                                        onClick={() =>
+                                          openInExplorer(event.transactionHash)
+                                        }
                                         className="h-6 w-6 p-0"
                                       >
                                         <ExternalLink className="w-3 h-3" />
@@ -561,9 +670,11 @@ export function BlockchainVerifier() {
           <div className="flex items-start gap-2">
             <div className="w-1 h-1 bg-orange-500 rounded-full mt-2"></div>
             <div className="text-sm text-orange-800">
-              <strong>Réseau Chiliz Spicy Testnet</strong><br />
-              Toutes les données affichées sont stockées de manière immuable sur la blockchain Chiliz 
-              et peuvent être vérifiées publiquement via l'explorateur officiel.
+              <strong>Réseau Chiliz Spicy Testnet</strong>
+              <br />
+              Toutes les données affichées sont stockées de manière immuable sur
+              la blockchain Chiliz et peuvent être vérifiées publiquement via
+              l'explorateur officiel.
             </div>
           </div>
         </CardContent>

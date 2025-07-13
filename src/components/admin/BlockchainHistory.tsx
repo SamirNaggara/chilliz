@@ -216,6 +216,12 @@ export function BlockchainHistory({ contestId }: BlockchainHistoryProps) {
                           {blockchainUtils.formatAddress(event.walletAddress)}
                         </div>
                         
+                        {event.type === 'LOTTERY_PARTICIPATION' && event.data.username && (
+                          <div>
+                            <span className="font-medium">Utilisateur:</span> {event.data.username}
+                          </div>
+                        )}
+                        
                         {event.type === 'LOTTERY_PARTICIPATION' && event.data.jerseyId && (
                           <div>
                             <span className="font-medium">Jersey:</span> {event.data.jerseyId}
