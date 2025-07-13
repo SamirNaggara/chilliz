@@ -7,9 +7,27 @@ export async function getJerseyDexEntries(walletAddress: string) {
   try {
     const entries = await prisma.jerseyDex.findMany({
       where: { walletAddress: walletAddress.toLowerCase() },
-      include: { jersey: true },
+      include: {
+        jersey: {
+          select: {
+            id: true,
+            name: true,
+            createdAt: true,
+            assetUrl: true,
+            assetType: true,
+          },
+        },
+      },
       orderBy: { addedAt: "desc" },
     });
+
+    console.log(
+      "📊 getJerseyDexEntries - Data from DB:",
+      entries.map((entry) => ({
+        jerseyId: entry.jerseyId,
+        jersey: entry.jersey,
+      }))
+    );
 
     return {
       success: true,
@@ -50,7 +68,15 @@ export async function addJerseyToDex(walletAddress: string, jerseyId: string) {
         jerseyId,
       },
       include: {
-        jersey: true,
+        jersey: {
+          select: {
+            id: true,
+            name: true,
+            createdAt: true,
+            assetUrl: true,
+            assetType: true,
+          },
+        },
       },
     });
 

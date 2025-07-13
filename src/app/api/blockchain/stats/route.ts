@@ -51,6 +51,7 @@ export async function GET() {
           blockchainTimestamp: true,
           blockchainConfirmed: true,
           contestId: true,
+          username: true,
         },
         orderBy: {
           blockchainTimestamp: "desc",
@@ -91,6 +92,7 @@ export async function GET() {
         status: p.blockchainConfirmed
           ? ("confirmed" as const)
           : ("pending" as const),
+        username: p.username || null,
       })),
       ...recentWinners.map((w) => ({
         hash: w.blockchainTxHash!,

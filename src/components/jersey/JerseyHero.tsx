@@ -1,21 +1,28 @@
 import { Badge } from "@/components/ui/badge";
-import { SmartMediaLightbox } from "@/components/media/SmartMediaLightbox";
 import { Shield } from "lucide-react";
 import Link from "next/link";
 
 interface JerseyHeroProps {
   jerseyName: string;
-  jerseyImage: string;
+  assetUrl?: string | null;
+  assetType?: string | null;
   isAuthentic: boolean;
 }
 
 export function JerseyHero({
   jerseyName,
-  jerseyImage,
+  assetUrl,
+  assetType,
   isAuthentic,
 }: JerseyHeroProps) {
   return (
     <div className="max-w-4xl mx-auto">
+      {/* Titre du maillot au-dessus de l'image */}
+      <div className="text-center mb-6">
+        <h1 className="text-4xl font-bold text-gray-800 mb-2">{jerseyName}</h1>
+        <p className="text-gray-600 text-lg">Official PSG Collection</p>
+      </div>
+
       {/* Image principale avec effet et badge d'authenticité en absolute */}
       <div className="relative group cursor-pointer mb-8">
         {/* Badge d'authenticité en absolute */}
@@ -24,33 +31,35 @@ export function JerseyHero({
             <Link href="/jerseydex">
               <Badge className="bg-green-500 text-white px-3 py-1 text-xs font-semibold rounded-lg shadow-lg flex items-center gap-1 hover:bg-green-600 transition-colors cursor-pointer">
                 <Shield className="w-4 h-4 mr-1" />
-                Authentique
+                Authentic
               </Badge>
             </Link>
           ) : (
             <Badge className="bg-orange-400 text-white px-3 py-1 text-xs font-semibold rounded-lg shadow-lg flex items-center gap-1">
               <Shield className="w-4 h-4 mr-1" />
-              Non authentifié
+              Not authenticated
             </Badge>
           )}
         </div>
         <div className="relative overflow-hidden rounded-2xl shadow-2xl bg-white p-8">
           <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-blue-500/10 rounded-2xl"></div>
           <div className="relative z-10">
-            <SmartMediaLightbox
-              basename={jerseyImage.replace(/\.(png|jpg|jpeg|gif|mp4)$/i, "")}
-              alt={jerseyName}
-              fallbackSrc="/jerseys/default-jersey.svg"
-              className="mx-auto"
-            />
+            {assetType === "video" ? (
+              <video
+                src={assetUrl || "/jerseys/default-jersey.svg"}
+                className="mx-auto max-h-96 rounded-xl shadow-lg"
+                controls
+                poster="/jerseys/default-jersey.svg"
+              />
+            ) : (
+              <img
+                src={assetUrl || "/jerseys/default-jersey.svg"}
+                alt={jerseyName}
+                className="mx-auto max-h-96 rounded-xl shadow-lg"
+              />
+            )}
           </div>
         </div>
-      </div>
-
-      {/* Informations du maillot */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">{jerseyName}</h1>
-        <p className="text-gray-600 text-lg">Collection Officielle PSG</p>
       </div>
     </div>
   );

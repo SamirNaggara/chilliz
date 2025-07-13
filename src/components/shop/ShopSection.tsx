@@ -4,7 +4,7 @@ import { ShopAdvantages } from "./ShopAdvantages";
 
 export function ShopSection() {
   return (
-    <div className="bg-white py-16">
+    <div id="shop" className="bg-white py-16">
       <div className="container mx-auto px-4">
         <ShopHeader />
         <ShopProducts />

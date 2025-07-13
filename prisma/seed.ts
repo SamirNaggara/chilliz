@@ -8,30 +8,42 @@ async function main() {
   // Créer les maillots qui correspondent aux images disponibles
   const jersey1 = await prisma.jersey.upsert({
     where: { id: "jersey-mbappe-2024" },
-    update: {},
+    update: {
+      assetUrl: "/jerseys/jersey-mbappe-2024.png",
+      assetType: "image",
+    },
     create: {
       id: "jersey-mbappe-2024",
       name: "Maillot Mbappé Home 2024",
+      assetUrl: "/jerseys/jersey-mbappe-2024.png",
+      assetType: "image",
     },
   });
 
   const jersey2 = await prisma.jersey.upsert({
     where: { id: "jersey-messi-2024" },
-    update: {},
+    update: {
+      assetUrl: "/jerseys/jersey-messi-2024.png",
+      assetType: "image",
+    },
     create: {
       id: "jersey-messi-2024",
       name: "Maillot Messi Away 2024",
+      assetUrl: "/jerseys/jersey-messi-2024.png",
+      assetType: "image",
     },
   });
 
   const jersey3 = await prisma.jersey.upsert({
     where: { id: "chiliz-hacking-paris-hat" },
-    update: {},
+    update: {
+      assetUrl: "/jerseys/jersey_hat.mp4",
+      assetType: "video",
+    },
     create: {
       id: "chiliz-hacking-paris-hat",
       name: "Chiliz Hacking Paris Hat",
-      assetUrl:
-        "https://draft-nft-image.s3.eu-north-1.amazonaws.com/c42af7d86714_1752231777917_1.mp4",
+      assetUrl: "/jerseys/jersey_hat.mp4",
       assetType: "video",
     },
   });

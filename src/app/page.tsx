@@ -1,17 +1,7 @@
 import { getJerseys } from "@/lib/actions";
-import { getContests } from "@/lib/contest-actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Trophy,
-  Users,
-  Eye,
-  ArrowRight,
-  Calendar,
-  Crown,
-  Medal,
-  Award,
-} from "lucide-react";
+import { Trophy, Users, Eye, ArrowRight, Shield } from "lucide-react";
 import Link from "next/link";
 
 // Forcer la revalidation dynamique de cette page
@@ -20,12 +10,8 @@ export const revalidate = 0;
 
 export default async function Home() {
   const jerseysResult = await getJerseys();
-  const contestsResult = await getContests();
 
   const jerseys = jerseysResult.success ? jerseysResult.jerseys : [];
-  const contests = contestsResult.success ? contestsResult.contests : [];
-  const activeContests =
-    contests?.filter((contest) => contest.status === "ACTIVE") || [];
 
   const totalScans =
     jerseys?.reduce(
@@ -64,92 +50,17 @@ export default async function Home() {
                   Voir un Maillot
                 </Button>
               </Link>
+              <Link href="/blockchain-verification">
+                <Button className="bg-gradient-to-r from-blue-600 to-red-600 hover:from-red-700 hover:to-blue-700 text-white font-semibold">
+                  <Shield className="w-4 h-4 mr-2" />
+                  Vérification Blockchain
+                </Button>
+              </Link>
             </div>
           </div>
 
           {/* Concours Actifs */}
-          {activeContests.length > 0 && (
-            <div className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">
-                Concours Actifs
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {activeContests.map((contest) => (
-                  <Card
-                    key={contest.id}
-                    className="bg-gradient-to-br from-yellow-50 to-orange-50 border-orange-200"
-                  >
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-orange-800">
-                        <Trophy className="w-5 h-5" />
-                        {contest.name}
-                      </CardTitle>
-                      <p className="text-sm text-gray-600">
-                        {contest.description || "Aucune description"}
-                      </p>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Calendar className="w-4 h-4" />
-                          {/*
-                          <span>
-                            Jusqu&apos;au{" "}
-                            {contest.endedAt
-                              ? new Date(contest.endedAt).toLocaleString(
-                                  "fr-FR"
-                                )
-                              : "En cours"}
-                          </span>
-                          */}
-                        </div>
-
-                        {/* Affichage des 3 prix */}
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2 text-sm">
-                            <Trophy className="w-4 h-4" />
-                            <span className="font-semibold">Prix :</span>
-                          </div>
-                          <div className="grid grid-cols-1 gap-2 text-sm">
-                            <div className="flex items-center gap-2 text-yellow-700">
-                              <Crown className="w-3 h-3" />
-                              <span className="font-medium">1er :</span>
-                              <span>{contest.firstPrize}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-gray-700">
-                              <Medal className="w-3 h-3" />
-                              <span className="font-medium">2ème :</span>
-                              <span>{contest.secondPrize}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-orange-700">
-                              <Award className="w-3 h-3" />
-                              <span className="font-medium">3ème :</span>
-                              <span>{contest.thirdPrize}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Users className="w-4 h-4" />
-                          <span>
-                            {contest.participations?.length || 0} participations
-                          </span>
-                        </div>
-
-                        <Link href={`/admin/contests/${contest.id}`}>
-                          <Button className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white">
-                            <Eye className="w-4 h-4 mr-2" />
-                            Voir le Concours
-                            <ArrowRight className="w-4 h-4 ml-2" />
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Bloc supprimé */}
 
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -196,6 +107,9 @@ export default async function Home() {
             </Card>
           </div>
 
+          {/* Vérification Blockchain */}
+          {/* Bloc supprimé */}
+
           {/* Maillots */}
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">
@@ -209,17 +123,30 @@ export default async function Home() {
                 >
                   <CardContent className="p-6">
                     <div className="text-center mb-4">
-                      <div className="w-16 h-16 bg-gradient-to-r from-red-600 to-blue-600 rounded-full mx-auto mb-3 flex items-center justify-center">
-                        <Trophy className="w-8 h-8 text-white" />
-                      </div>
-                      <h3 className="font-semibold text-lg mb-2">
-                        {jersey.name}
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        {jersey.scans?.length || 0} scan
-                        {(jersey.scans?.length || 0) > 1 ? "s" : ""}
-                      </p>
+                      {jersey.assetType === "image" && jersey.assetUrl ? (
+                        <img
+                          src={jersey.assetUrl}
+                          alt={jersey.name}
+                          className="w-24 h-24 object-contain mx-auto mb-2 rounded shadow"
+                        />
+                      ) : jersey.assetType === "video" && jersey.assetUrl ? (
+                        <video
+                          src={jersey.assetUrl}
+                          className="w-24 h-24 object-contain mx-auto mb-2 rounded shadow"
+                          controls
+                          poster="/jerseys/default-jersey.svg"
+                        />
+                      ) : (
+                        <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded mb-2 mx-auto"></div>
+                      )}
                     </div>
+                    <h3 className="font-semibold text-lg mb-2">
+                      {jersey.name}
+                    </h3>
+                    <p className="text-gray-600 text-sm">
+                      {jersey.scans?.length || 0} scan
+                      {(jersey.scans?.length || 0) > 1 ? "s" : ""}
+                    </p>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-600">ID:</span>

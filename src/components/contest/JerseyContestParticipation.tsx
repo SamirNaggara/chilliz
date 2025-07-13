@@ -75,7 +75,7 @@ export function JerseyContestParticipation({
     if (!activeContest) {
       setResult({
         success: false,
-        message: "Aucun concours actif pour le moment",
+        message: "No active contest at the moment",
       });
       return;
     }
@@ -83,14 +83,14 @@ export function JerseyContestParticipation({
     if (!walletAddress.trim()) {
       setResult({
         success: false,
-        message: "Veuillez entrer votre adresse wallet",
+        message: "Please enter your wallet address",
       });
       return;
     }
     if (!username.trim()) {
       setResult({
         success: false,
-        message: "Veuillez entrer un nom d'utilisateur",
+        message: "Please enter a username",
       });
       return;
     }
@@ -109,7 +109,7 @@ export function JerseyContestParticipation({
       if (response.success) {
         setResult({
           success: true,
-          message: "Participation enregistrée avec succès !",
+          message: "Participation registered successfully!",
           blockchainTx: response.blockchainTx,
           explorerUrl: response.explorerUrl,
         });
@@ -118,13 +118,13 @@ export function JerseyContestParticipation({
       } else {
         setResult({
           success: false,
-          message: response.error || "Erreur lors de la participation",
+          message: response.error || "Error during participation",
         });
       }
     } catch {
       setResult({
         success: false,
-        message: "Erreur de connexion",
+        message: "Connection error",
       });
     } finally {
       setIsLoading(false);
@@ -132,7 +132,7 @@ export function JerseyContestParticipation({
   };
 
   const formatTimeRemaining = () => {
-    return "Concours en cours";
+    return "Contest ongoing";
   };
 
   if (!isAuthentic) {
@@ -141,12 +141,15 @@ export function JerseyContestParticipation({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-red-600">
             <Trophy className="w-5 h-5" />
-            Participation Non Autorisée
+            Unauthorized Participation
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-gray-600 mb-4">
-            Seuls les maillots authentiques peuvent participer aux concours PSG.
+            PSG contests are only accessible if you have scanned your jersey.
+            <br />
+            Please scan your authentic PSG jersey to unlock contest
+            participation.
           </p>
         </CardContent>
       </Card>
@@ -155,21 +158,98 @@ export function JerseyContestParticipation({
 
   if (!activeContest) {
     return (
-      <Card className="bg-gradient-to-br from-gray-50 to-blue-50 border-gray-200">
+      <Card className="bg-gradient-to-br from-purple-50 via-pink-50 to-red-50 border-2 border-purple-200 shadow-xl">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-gray-600">
-            <Trophy className="w-5 h-5" />
-            Aucun Concours Actif
+          <CardTitle className="flex items-center gap-2 text-purple-800 text-2xl font-extrabold">
+            <Trophy className="w-6 h-6 text-yellow-500 animate-pulse" />
+            🚀 Don&apos;t Miss Any PSG Opportunities !
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-600 mb-4">
-            Il n&apos;y a actuellement aucun concours en cours.
-          </p>
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <p className="text-sm text-gray-700">
-              Revenez plus tard pour participer aux prochains événements PSG !
+          <div className="text-center space-y-6">
+            <p className="text-xl text-purple-800 font-bold">
+              Scan your jersey regularly to never miss the next opportunities !
             </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-gradient-to-br from-yellow-50 to-orange-50 p-4 rounded-xl border border-yellow-200">
+                <div className="text-2xl mb-2">💰</div>
+                <h4 className="font-bold text-yellow-800 mb-2">Free Chilliz</h4>
+                <p className="text-sm text-yellow-700">
+                  Win hundreds of CHZ for free by participating in contests
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-red-50 to-pink-50 p-4 rounded-xl border border-red-200">
+                <div className="text-2xl mb-2">🎁</div>
+                <h4 className="font-bold text-red-800 mb-2">Exclusive Gifts</h4>
+                <p className="text-sm text-red-700">
+                  Signed jerseys, collector scarves, rare accessories
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-4 rounded-xl border border-blue-200">
+                <div className="text-2xl mb-2">⭐</div>
+                <h4 className="font-bold text-blue-800 mb-2">
+                  Player Meetings
+                </h4>
+                <p className="text-sm text-blue-700">
+                  VIP seats, photos with stars, unique experiences
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 rounded-xl border border-purple-300">
+              <p className="text-purple-800 font-semibold mb-2">
+                🎯 Next Opportunities Not to Miss :
+              </p>
+              <ul className="text-sm text-purple-700 space-y-1 text-left">
+                <li>
+                  • <strong>Mbappé Contest</strong> - 1000 CHZ + Signed Jersey
+                </li>
+                <li>
+                  • <strong>VIP Lottery</strong> - Match tickets + Team meeting
+                </li>
+                <li>
+                  • <strong>Exclusive Collection</strong> - Limited PSG editions
+                </li>
+                <li>
+                  • <strong>Unique Experiences</strong> - Locker room access,
+                  official photos
+                </li>
+              </ul>
+            </div>
+
+            <div className="flex flex-col md:flex-row justify-center gap-4 mt-6">
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById("shop");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold px-8 py-4 rounded-xl shadow-lg hover:scale-105 transition-transform text-lg"
+              >
+                🏆 Become a PSG Leader
+              </button>
+              <a
+                href="https://www.chiliz.com/en/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-white border-2 border-purple-600 text-purple-700 font-bold px-8 py-4 rounded-xl shadow hover:bg-purple-50 hover:scale-105 transition-transform text-lg"
+              >
+                💎 Discover Chilliz
+              </a>
+            </div>
+
+            <div className="bg-gradient-to-r from-yellow-100 to-orange-100 p-4 rounded-xl border border-yellow-300">
+              <p className="text-yellow-800 font-bold text-lg">
+                ⚡ Come back regularly to scan your jersey !
+              </p>
+              <p className="text-yellow-700 text-sm mt-1">
+                Contests are launched unexpectedly - be ready to seize the
+                opportunity !
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -184,38 +264,38 @@ export function JerseyContestParticipation({
             <div className="flex items-center gap-2 mb-2">
               <CheckCircle className="w-6 h-6 text-green-600 animate-bounce" />
               <span className="text-lg font-bold text-green-800">
-                Bravo, vous êtes en lice pour le tirage au sort ! 🎉
+                Congrats, you are in the draw! 🎉
               </span>
             </div>
             <p className="text-green-700 mb-2">
-              Votre participation est enregistrée. Bonne chance pour le tirage !
+              Your participation is registered. Good luck for the draw!
             </p>
             <p className="text-gray-700 text-sm mb-2">
-              Le tirage au sort aura lieu à la fin du concours. Voici les prix
-              que vous pouvez remporter&nbsp;:
+              The draw will take place at the end of the contest. Here are the
+              prizes you can win:
             </p>
             <ul className="space-y-1 text-base">
               <li className="flex items-center gap-2 text-yellow-700 font-semibold">
                 <span className="inline-block bg-yellow-200 rounded-full px-2 py-0.5 text-xs font-bold">
-                  1er
+                  1st
                 </span>
-                <span>{activeContest.firstPrize || "1er prix"}</span>
+                <span>{activeContest.firstPrize || "1st prize"}</span>
               </li>
               <li className="flex items-center gap-2 text-gray-700 font-semibold">
                 <span className="inline-block bg-gray-200 rounded-full px-2 py-0.5 text-xs font-bold">
-                  2e
+                  2nd
                 </span>
-                <span>{activeContest.secondPrize || "2e prix"}</span>
+                <span>{activeContest.secondPrize || "2nd prize"}</span>
               </li>
               <li className="flex items-center gap-2 text-orange-700 font-semibold">
                 <span className="inline-block bg-orange-200 rounded-full px-2 py-0.5 text-xs font-bold">
-                  3e
+                  3rd
                 </span>
-                <span>{activeContest.thirdPrize || "3e prix"}</span>
+                <span>{activeContest.thirdPrize || "3rd prize"}</span>
               </li>
             </ul>
             <p className="text-xs text-gray-500 mt-2">
-              Restez connecté, les gagnants seront annoncés ici même !
+              Stay tuned, winners will be announced right here!
             </p>
 
             {/* Affichage blockchain pour participation confirmée */}
@@ -240,118 +320,130 @@ export function JerseyContestParticipation({
     if (isCheckingParticipation) {
       mainContent = (
         <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-          <p className="text-blue-700">
-            Vérification de votre participation...
-          </p>
+          <p className="text-blue-700">Checking your participation...</p>
         </div>
       );
     } else if (hasParticipated) {
       mainContent = (
-        <div className="bg-gradient-to-r from-green-50 to-yellow-50 border-2 border-green-200 rounded-xl p-5 flex flex-col items-center gap-4 shadow-md mt-2">
+        <div className="bg-gradient-to-br from-blue-50 via-white to-red-50 border-2 border-blue-200 rounded-xl p-6 flex flex-col items-center gap-4 shadow-md mt-2">
           <div className="flex flex-col items-center w-full">
             <div className="flex items-center gap-2 mb-2">
-              <CheckCircle className="w-6 h-6 text-green-600 animate-bounce" />
-              <span className="text-lg font-bold text-green-800">
-                Bravo, vous êtes en lice pour le tirage au sort ! 🎉
+              <Trophy className="w-7 h-7 text-red-600 animate-bounce" />
+              <span className="text-2xl font-extrabold text-blue-900 drop-shadow">
+                Bravo&nbsp;
+                <span className="text-red-600">{username || "Champion"}</span>
+                &nbsp;!
               </span>
             </div>
-            <p className="text-green-700 mb-2">
-              Votre participation est enregistrée. Bonne chance pour le tirage !
+            <p className="text-lg text-blue-800 font-semibold mb-2">
+              You have successfully participated in the PSG contest!
             </p>
-            <p className="text-gray-700 text-sm mb-2">
-              Le tirage au sort aura lieu à la fin du concours. Voici les prix
-              que vous pouvez remporter&nbsp;:
+            <p className="text-gray-700 text-base mb-2 text-center">
+              Come back to scan your jersey in the next few days to discover if
+              you have won an exclusive reward&nbsp;
+              <span className="font-bold text-red-600">PSG</span>.<br />
+              <span className="text-lg text-blue-700 font-bold">
+                Victory is just around the corner…&nbsp;🔥
+              </span>
             </p>
-            <ul className="space-y-1 text-base">
-              <li className="flex items-center gap-2 text-yellow-700 font-semibold">
-                <span className="inline-block bg-yellow-200 rounded-full px-2 py-0.5 text-xs font-bold">
-                  1er
-                </span>
-                <span>{activeContest.firstPrize || "1er prix"}</span>
-              </li>
-              <li className="flex items-center gap-2 text-gray-700 font-semibold">
-                <span className="inline-block bg-gray-200 rounded-full px-2 py-0.5 text-xs font-bold">
-                  2e
-                </span>
-                <span>{activeContest.secondPrize || "2e prix"}</span>
-              </li>
-              <li className="flex items-center gap-2 text-orange-700 font-semibold">
-                <span className="inline-block bg-orange-200 rounded-full px-2 py-0.5 text-xs font-bold">
-                  3e
-                </span>
-                <span>{activeContest.thirdPrize || "3e prix"}</span>
-              </li>
-            </ul>
-            <p className="text-xs text-gray-500 mt-2">
-              Restez connecté, les gagnants seront annoncés ici même !
-            </p>
+            <div className="flex items-center gap-2 mt-4">
+              <Badge className="bg-gradient-to-r from-red-600 to-blue-600 text-white px-4 py-2 text-base font-bold shadow-lg">
+                PSG Contest
+              </Badge>
+              <CheckCircle className="w-6 h-6 text-green-600 animate-pulse" />
+            </div>
           </div>
         </div>
       );
     } else {
       mainContent = (
-        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-          {/* ... formulaire de participation ... */}
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Nom d&apos;utilisateur (affiché si vous gagnez)
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="ex: SamPSG"
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent mb-4"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="wallet"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Adresse Wallet
-            </label>
-            <input
-              id="wallet"
-              type="text"
-              value={walletAddress}
-              onChange={(e) => setWalletAddress(e.target.value)}
-              placeholder="0x1234...5678"
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            />
-          </div>
-          <Button
-            onClick={handleParticipation}
-            disabled={isLoading || !walletAddress.trim() || !username.trim()}
-            className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold"
-          >
-            {isLoading ? (
-              <>
-                <span className="animate-spin mr-2">⏳</span>
-                Participation en cours...
-              </>
-            ) : (
-              <>
-                <Trophy className="w-4 h-4 mr-2" />
-                Participer au Concours
-              </>
-            )}
-          </Button>
-          {result && (
-            <div
-              className={`p-3 rounded-lg text-sm ${
-                result.success
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
-              }`}
-            >
-              {result.message}
+        <div className="bg-gradient-to-br from-blue-50 via-white to-red-50 border-2 border-blue-200 rounded-xl p-8 flex flex-col items-center gap-6 shadow-md mt-2">
+          <div className="flex flex-col items-center w-full">
+            <div className="flex items-center gap-3 mb-4">
+              <Trophy className="w-8 h-8 text-red-600 animate-bounce" />
+              <span className="text-2xl font-extrabold text-blue-900 drop-shadow uppercase tracking-wide">
+                Join the PSG Contest!
+              </span>
+              <Badge className="bg-gradient-to-r from-red-600 to-blue-600 text-white px-3 py-1 text-base font-bold shadow-lg">
+                Fan Challenge
+              </Badge>
             </div>
-          )}
+            <p className="text-lg text-blue-800 font-semibold mb-2 text-center">
+              Scan, play and become a PSG legend!
+              <br />
+              <span className="text-red-600 font-bold">
+                Exclusive prizes to win every month!
+              </span>
+            </p>
+            <div className="w-full bg-blue-100/60 rounded-xl p-4 mb-4">
+              <div>
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-blue-900 mb-2"
+                >
+                  Your PSG nickname (displayed if you win)
+                </label>
+                <input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="e.g. SamPSG"
+                  className="w-full p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent mb-4"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="wallet"
+                  className="block text-sm font-medium text-blue-900 mb-2"
+                >
+                  Wallet Address
+                </label>
+                <input
+                  id="wallet"
+                  type="text"
+                  value={walletAddress}
+                  onChange={(e) => setWalletAddress(e.target.value)}
+                  placeholder="0x1234...5678"
+                  className="w-full p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+              </div>
+              <Button
+                onClick={handleParticipation}
+                disabled={
+                  isLoading || !walletAddress.trim() || !username.trim()
+                }
+                className="w-full bg-gradient-to-r from-red-600 to-blue-600 hover:from-blue-700 hover:to-red-700 text-white font-extrabold text-lg py-3 rounded-xl shadow-lg transition-all duration-200 mt-4 tracking-wide uppercase flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <span className="animate-spin mr-2">⏳</span>
+                    Participation in progress...
+                  </>
+                ) : (
+                  <>
+                    <Trophy className="w-5 h-5 mr-2" />
+                    Try my luck!
+                  </>
+                )}
+              </Button>
+              {result && (
+                <div
+                  className={`p-3 rounded-lg text-sm mt-3 ${
+                    result.success
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
+                  {result.message}
+                </div>
+              )}
+            </div>
+            <p className="text-xs text-blue-700 text-center mt-2">
+              ⚡ Winners will be announced here at the end of the contest. Good
+              luck!
+            </p>
+          </div>
         </div>
       );
     }
@@ -363,10 +455,10 @@ export function JerseyContestParticipation({
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-orange-800">
             <Trophy className="w-5 h-5 text-yellow-600" />
-            Concours Actif
+            Active Contest
           </CardTitle>
           <Badge variant="default" className="bg-green-500">
-            En Cours
+            Ongoing
           </Badge>
         </div>
       </CardHeader>
@@ -393,7 +485,7 @@ export function JerseyContestParticipation({
         {!isConnected && (
           <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
             <p className="text-orange-700">
-              Connectez-vous à votre wallet pour participer au concours.
+              Connect your wallet to join the contest.
             </p>
           </div>
         )}

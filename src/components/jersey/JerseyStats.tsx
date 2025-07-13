@@ -18,7 +18,7 @@ export function JerseyStats({ totalScans, uniqueUsers }: JerseyStatsProps) {
             <Users className="w-8 h-8 text-red-600" />
           </div>
           <div className="text-3xl font-bold text-red-600">{totalScans}</div>
-          <div className="text-sm text-red-700 font-medium">Scans Totaux</div>
+          <div className="text-sm text-red-700 font-medium">Total Scans</div>
         </CardContent>
       </Card>
 
@@ -28,9 +28,7 @@ export function JerseyStats({ totalScans, uniqueUsers }: JerseyStatsProps) {
             <Crown className="w-8 h-8 text-blue-600" />
           </div>
           <div className="text-3xl font-bold text-blue-600">{uniqueUsers}</div>
-          <div className="text-sm text-blue-700 font-medium">
-            Utilisateurs Uniques
-          </div>
+          <div className="text-sm text-blue-700 font-medium">Unique Users</div>
         </CardContent>
       </Card>
 
@@ -43,7 +41,7 @@ export function JerseyStats({ totalScans, uniqueUsers }: JerseyStatsProps) {
             {engagementRate}%
           </div>
           <div className="text-sm text-green-700 font-medium">
-            Taux d&apos;Engagement
+            Engagement Rate
           </div>
         </CardContent>
       </Card>

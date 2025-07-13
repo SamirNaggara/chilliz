@@ -5,7 +5,6 @@ import { JerseyContestParticipation } from "@/components/contest/JerseyContestPa
 import { ContestPopupWrapper } from "@/components/contest/ContestPopupWrapper";
 import { ShopSection } from "@/components/shop/ShopSection";
 import { JerseyFooter } from "@/components/jersey/JerseyFooter";
-import { getJerseyImage } from "@/lib/utils";
 import { AddToJerseydexButton } from "@/components/jersey/AddToJerseydexButton";
 
 // Configuration pour éviter les problèmes de cache
@@ -48,7 +47,6 @@ export default async function JerseyPage({
   });
 
   // 2. Calculs simples
-  const jerseyImage = getJerseyImage(jersey);
 
   // 3. Rendu avec composants
   return (
@@ -56,21 +54,26 @@ export default async function JerseyPage({
       <div className="container mx-auto px-4 py-8">
         <JerseyHero
           jerseyName={jersey.name}
-          jerseyImage={jerseyImage}
+          assetUrl={jersey.assetUrl}
+          assetType={jersey.assetType}
           isAuthentic={isAuth}
         />
-        <div className="flex justify-center mt-6 mb-8">
-          <AddToJerseydexButton jerseyId={jersey.id} />
-        </div>
-        <div className="mb-12">
-          <JerseyContestParticipation
-            jerseyId={jersey.id}
-            activeContest={activeContest}
-            isAuthentic={isAuth}
-          />
+        <div className="max-w-4xl mx-auto">
+          <div className="flex justify-center mt-6 mb-8">
+            <AddToJerseydexButton jerseyId={jersey.id} />
+          </div>
+          <div className="mb-12">
+            <JerseyContestParticipation
+              jerseyId={jersey.id}
+              activeContest={activeContest}
+              isAuthentic={isAuth}
+            />
+          </div>
         </div>
       </div>
-      <ShopSection />
+      <div className="max-w-4xl mx-auto">
+        <ShopSection />
+      </div>
       <JerseyFooter />
 
       {/* Popup de concours */}

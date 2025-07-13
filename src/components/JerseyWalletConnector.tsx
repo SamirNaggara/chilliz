@@ -4,14 +4,14 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAccount, useConnect, useDisconnect, type Connector } from "wagmi";
-import { 
-  formatAddress, 
-  detectMetaMask, 
-  isMobileDevice, 
-  createMetaMaskDeepLink, 
+import {
+  formatAddress,
+  detectMetaMask,
+  isMobileDevice,
+  createMetaMaskDeepLink,
   connectMetaMaskMobile,
   getMobileMetaMaskError,
-  isProductionEnvironment
+  isProductionEnvironment,
 } from "@/lib/web3";
 import { useWeb3 } from "@/hooks/useWeb3";
 import {
@@ -78,7 +78,10 @@ export function JerseyWalletConnector({
   const handleConnectWallet = async (connector: Connector) => {
     try {
       // Sur mobile, utiliser la logique spéciale pour MetaMask
-      if (isMobile && (connector.name === "MetaMask" || connector.name === "Injected")) {
+      if (
+        isMobile &&
+        (connector.name === "MetaMask" || connector.name === "Injected")
+      ) {
         // Si MetaMask n'est pas installé sur mobile, utiliser deep link
         if (!metaMaskInfo.isInstalled) {
           const deepLink = createMetaMaskDeepLink();
@@ -86,7 +89,7 @@ export function JerseyWalletConnector({
           window.location.href = deepLink;
           return;
         }
-        
+
         // Si MetaMask est installé, essayer la connexion directe
         try {
           await connectMetaMaskMobile();
@@ -98,14 +101,17 @@ export function JerseyWalletConnector({
           return;
         }
       }
-      
+
       // Connexion standard pour desktop ou autres wallets
       await connect({ connector });
     } catch (error) {
       console.error("Erreur de connexion wallet:", error);
-      
+
       // Sur mobile, toujours essayer le deep link en cas d'erreur
-      if (isMobile && (connector.name === "MetaMask" || connector.name === "Injected")) {
+      if (
+        isMobile &&
+        (connector.name === "MetaMask" || connector.name === "Injected")
+      ) {
         const deepLink = createMetaMaskDeepLink();
         console.log("🔗 Fallback deep link:", deepLink);
         window.location.href = deepLink;
@@ -244,7 +250,9 @@ export function JerseyWalletConnector({
             ) : (
               <>
                 <Zap className="w-4 h-4 mr-2" />
-                {isMobile && !metaMaskInfo.isInstalled ? "Open MetaMask" : "Connect Wallet"}
+                {isMobile && !metaMaskInfo.isInstalled
+                  ? "Open MetaMask"
+                  : "Connect Wallet"}
               </>
             )}
           </Button>
@@ -254,7 +262,7 @@ export function JerseyWalletConnector({
               if (isMobile) {
                 // Sur mobile, rediriger vers l'App Store/Play Store
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                const storeUrl = isIOS 
+                const storeUrl = isIOS
                   ? "https://apps.apple.com/app/metamask/id1438144202"
                   : "https://play.google.com/store/apps/details?id=io.metamask";
                 window.open(storeUrl, "_blank");
@@ -270,7 +278,7 @@ export function JerseyWalletConnector({
             {isMobile ? "Install MetaMask App" : "Install MetaMask"}
           </Button>
         )}
-        
+
         {isMobile && !isProduction && (
           <div className="text-xs text-yellow-600 bg-yellow-50 px-2 py-1 rounded">
             ⚠️ HTTPS requis pour mobile
@@ -348,7 +356,9 @@ export function JerseyWalletConnector({
               ) : (
                 <>
                   <Zap className="w-4 h-4 mr-2" />
-                  {isMobile && !metaMaskInfo.isInstalled ? "Open MetaMask" : "Connect Wallet"}
+                  {isMobile && !metaMaskInfo.isInstalled
+                    ? "Open MetaMask"
+                    : "Connect Wallet"}
                 </>
               )}
             </Button>
@@ -357,7 +367,7 @@ export function JerseyWalletConnector({
               onClick={() => {
                 if (isMobile) {
                   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                  const storeUrl = isIOS 
+                  const storeUrl = isIOS
                     ? "https://apps.apple.com/app/metamask/id1438144202"
                     : "https://play.google.com/store/apps/details?id=io.metamask";
                   window.open(storeUrl, "_blank");
@@ -366,14 +376,14 @@ export function JerseyWalletConnector({
                 }
               }}
               variant="outline"
-              className="border-white text-white hover:bg-white hover:text-red-600 transition-colors"
+              className="border-white text-red-600 hover:bg-white hover:text-white transition-colors"
             >
               <Zap className="w-4 h-4 mr-2" />
               {isMobile ? "Install MetaMask App" : "Install MetaMask"}
             </Button>
           )}
         </div>
-        
+
         {isMobile && !isProduction && (
           <div className="text-center mt-4">
             <div className="text-xs text-yellow-200 bg-yellow-600/20 px-3 py-2 rounded-lg">

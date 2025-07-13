@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { JerseyWalletConnector } from "@/components/JerseyWalletConnector";
-import { Trophy, Shield } from "lucide-react";
+import { Trophy } from "lucide-react";
 
 export function GlobalHeader() {
   return (
@@ -17,16 +17,6 @@ export function GlobalHeader() {
               </div>
               <span className="font-bold text-lg text-gray-800 tracking-wide">
                 FanScan
-              </span>
-            </Link>
-
-            <Link
-              href="/blockchain-verification"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 hover:from-green-100 hover:to-emerald-100 transition-all duration-200"
-            >
-              <Shield className="w-4 h-4 text-green-600" />
-              <span className="text-sm font-medium text-green-800">
-                Vérification Blockchain
               </span>
             </Link>
           </div>

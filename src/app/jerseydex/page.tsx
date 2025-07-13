@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Trophy, Shield, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { getJerseyImage } from "@/lib/utils";
 import { getJerseyDexEntries } from "@/lib/jerseydex-actions";
+import { JerseyCard } from "@/components/jersey/JerseyCard";
+import { JerseyFooter } from "@/components/jersey/JerseyFooter";
 
 interface JerseyDexEntry {
   id: string;
@@ -217,27 +217,7 @@ export default function JerseydexPage() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-center">
-                        <div className="mb-4">
-                          <img
-                            src={getJerseyImage({ id: entry.jersey.id })}
-                            alt={entry.jersey.name}
-                            className="w-32 h-32 object-contain mx-auto"
-                            onError={(e) => {
-                              e.currentTarget.src =
-                                "/jerseys/default-jersey.svg";
-                            }}
-                          />
-                        </div>
-                        <h3 className="font-semibold text-gray-800 mb-2">
-                          {entry.jersey.name}
-                        </h3>
-                        <Link href={`/jersey/${entry.jersey.id}`}>
-                          <Button variant="outline" size="sm">
-                            Voir le maillot
-                          </Button>
-                        </Link>
-                      </div>
+                      <JerseyCard entry={entry} />
                     </CardContent>
                   </Card>
                 ))}
@@ -246,6 +226,7 @@ export default function JerseydexPage() {
           )}
         </div>
       </div>
+      <JerseyFooter />
     </div>
   );
 }

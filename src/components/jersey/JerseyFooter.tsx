@@ -9,7 +9,7 @@ export function JerseyFooter() {
           <span className="font-bold text-lg">Powered by Chilliz</span>
         </div>
         <p className="text-sm opacity-90">
-          Découvrez l&apos;écosystème blockchain du PSG
+          Discover the PSG blockchain ecosystem
         </p>
       </div>
     </div>

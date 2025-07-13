@@ -5,15 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Activity, 
-  Users, 
-  Trophy, 
+import {
+  Activity,
+  Users,
+  Trophy,
   TrendingUp,
   ExternalLink,
   RefreshCw,
-  Calendar,
-  Clock
+  Clock,
 } from "lucide-react";
 import { blockchainUtils } from "@/lib/chiliz-blockchain";
 
@@ -26,7 +25,8 @@ interface BlockchainStats {
     type: string;
     timestamp: number;
     contestId: string;
-    status: 'confirmed' | 'pending' | 'failed';
+    status: "confirmed" | "pending" | "failed";
+    username?: string; // Added for username
   }>;
 }
 
@@ -43,14 +43,14 @@ export function BlockchainDashboard() {
   const loadStats = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/blockchain/stats');
+      const response = await fetch("/api/blockchain/stats");
       const result = await response.json();
-      
+
       if (result.success) {
         setStats(result.data);
       }
     } catch (error) {
-      console.error('Erreur chargement stats:', error);
+      console.error("Erreur chargement stats:", error);
     } finally {
       setLoading(false);
     }
@@ -62,27 +62,34 @@ export function BlockchainDashboard() {
 
   const openExplorer = (hash: string) => {
     const url = blockchainUtils.getExplorerLink(hash);
-    window.open(url, '_blank');
+    window.open(url, "_blank");
   };
 
-  const filteredTransactions = stats?.recentTransactions.filter(tx => 
-    !contestFilter || tx.contestId.toLowerCase().includes(contestFilter.toLowerCase())
-  ) || [];
+  const filteredTransactions =
+    stats?.recentTransactions.filter(
+      (tx) =>
+        !contestFilter ||
+        tx.contestId.toLowerCase().includes(contestFilter.toLowerCase())
+    ) || [];
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Tableau de Bord Blockchain</h1>
-          <p className="text-gray-600">Monitoring en temps réel de l'activité blockchain</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Tableau de Bord Blockchain
+          </h1>
+          <p className="text-gray-600">
+            Monitoring en temps réel de l'activité blockchain
+          </p>
         </div>
-        <Button 
+        <Button
           onClick={refreshStats}
           disabled={loading}
           className="flex items-center gap-2"
         >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           Actualiser
         </Button>
       </div>
@@ -93,7 +100,9 @@ export function BlockchainDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-600 text-sm font-medium">Participations Total</p>
+                <p className="text-blue-600 text-sm font-medium">
+                  Participations Total
+                </p>
                 <p className="text-2xl font-bold text-blue-900">
                   {stats?.totalParticipations || 0}
                 </p>
@@ -107,7 +116,9 @@ export function BlockchainDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-yellow-600 text-sm font-medium">Gagnants Annoncés</p>
+                <p className="text-yellow-600 text-sm font-medium">
+                  Gagnants Annoncés
+                </p>
                 <p className="text-2xl font-bold text-yellow-900">
                   {stats?.totalWinners || 0}
                 </p>
@@ -121,7 +132,9 @@ export function BlockchainDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-600 text-sm font-medium">Concours Actifs</p>
+                <p className="text-green-600 text-sm font-medium">
+                  Concours Actifs
+                </p>
                 <p className="text-2xl font-bold text-green-900">
                   {stats?.activeContests || 0}
                 </p>
@@ -135,7 +148,9 @@ export function BlockchainDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-600 text-sm font-medium">Transactions 24h</p>
+                <p className="text-purple-600 text-sm font-medium">
+                  Transactions 24h
+                </p>
                 <p className="text-2xl font-bold text-purple-900">
                   {stats?.recentTransactions.length || 0}
                 </p>
@@ -172,46 +187,73 @@ export function BlockchainDashboard() {
             </div>
           ) : filteredTransactions.length > 0 ? (
             <div className="space-y-3">
-              {filteredTransactions.slice(0, 10).map((tx, index) => (
+              {filteredTransactions.slice(0, 10).map((tx) => (
                 <div
                   key={tx.hash}
                   className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border"
                 >
                   <div className="flex items-center gap-4">
-                    <div className={`w-3 h-3 rounded-full ${
-                      tx.status === 'confirmed' ? 'bg-green-500' :
-                      tx.status === 'pending' ? 'bg-yellow-500' :
-                      'bg-red-500'
-                    }`} />
-                    
+                    <div
+                      className={`w-3 h-3 rounded-full ${
+                        tx.status === "confirmed"
+                          ? "bg-green-500"
+                          : tx.status === "pending"
+                          ? "bg-yellow-500"
+                          : "bg-red-500"
+                      }`}
+                    />
+
                     <div>
                       <div className="flex items-center gap-2">
-                        <Badge variant={tx.type === 'LOTTERY_PARTICIPATION' ? 'default' : 'secondary'}>
-                          {tx.type === 'LOTTERY_PARTICIPATION' ? '🎲 Participation' : '🏆 Gagnant'}
+                        <Badge
+                          variant={
+                            tx.type === "LOTTERY_PARTICIPATION"
+                              ? "default"
+                              : "secondary"
+                          }
+                        >
+                          {tx.type === "LOTTERY_PARTICIPATION"
+                            ? "🎲 Participation"
+                            : "🏆 Gagnant"}
                         </Badge>
                         <span className="text-sm font-mono text-gray-600">
                           {blockchainUtils.formatTxHash(tx.hash)}
                         </span>
                       </div>
                       <div className="text-sm text-gray-500 mt-1">
-                        Contest: <span className="font-medium">{tx.contestId}</span>
+                        Contest:{" "}
+                        <span className="font-medium">{tx.contestId}</span>
+                        {tx.username && tx.type === "LOTTERY_PARTICIPATION" && (
+                          <>
+                            {" • "}
+                            <span>👤 {tx.username}</span>
+                          </>
+                        )}
                         {" • "}
-                        <span>{blockchainUtils.formatTimestamp(tx.timestamp)}</span>
+                        <span>
+                          {blockchainUtils.formatTimestamp(tx.timestamp)}
+                        </span>
                       </div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Badge className={
-                      tx.status === 'confirmed' ? 'bg-green-100 text-green-800' :
-                      tx.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-red-100 text-red-800'
-                    }>
-                      {tx.status === 'confirmed' ? '✅ Confirmé' :
-                       tx.status === 'pending' ? '⏳ En attente' :
-                       '❌ Échec'}
+                    <Badge
+                      className={
+                        tx.status === "confirmed"
+                          ? "bg-green-100 text-green-800"
+                          : tx.status === "pending"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-red-100 text-red-800"
+                      }
+                    >
+                      {tx.status === "confirmed"
+                        ? "✅ Confirmé"
+                        : tx.status === "pending"
+                        ? "⏳ En attente"
+                        : "❌ Échec"}
                     </Badge>
-                    
+
                     <Button
                       size="sm"
                       variant="outline"
@@ -226,10 +268,9 @@ export function BlockchainDashboard() {
             </div>
           ) : (
             <div className="text-center py-8 text-gray-500">
-              {contestFilter ? 
-                `Aucune transaction trouvée pour "${contestFilter}"` :
-                "Aucune activité blockchain récente"
-              }
+              {contestFilter
+                ? `Aucune transaction trouvée pour "${contestFilter}"`
+                : "Aucune activité blockchain récente"}
             </div>
           )}
         </CardContent>
@@ -246,7 +287,9 @@ export function BlockchainDashboard() {
         <CardContent>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <h3 className="font-medium text-orange-800 mb-2">Configuration Actuelle</h3>
+              <h3 className="font-medium text-orange-800 mb-2">
+                Configuration Actuelle
+              </h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Réseau:</span>
@@ -262,7 +305,9 @@ export function BlockchainDashboard() {
                     size="sm"
                     variant="link"
                     className="h-auto p-0 text-blue-600"
-                    onClick={() => window.open('https://spicy-explorer.chiliz.com', '_blank')}
+                    onClick={() =>
+                      window.open("https://spicy-explorer.chiliz.com", "_blank")
+                    }
                   >
                     spicy-explorer.chiliz.com
                   </Button>
@@ -271,7 +316,9 @@ export function BlockchainDashboard() {
             </div>
 
             <div>
-              <h3 className="font-medium text-orange-800 mb-2">Garanties Blockchain</h3>
+              <h3 className="font-medium text-orange-800 mb-2">
+                Garanties Blockchain
+              </h3>
               <div className="space-y-1 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
