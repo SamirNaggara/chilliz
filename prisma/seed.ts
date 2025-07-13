@@ -48,25 +48,6 @@ async function main() {
     },
   });
 
-  // Créer un concours actif avec les nouveaux champs de prix
-  const contest = await prisma.contest.upsert({
-    where: { id: "contest-summer-2024" },
-    update: {
-      firstPrize: "1000 CHZ + Maillot Collector Mbappé",
-      secondPrize: "500 CHZ + Maillot Messi",
-      thirdPrize: "250 CHZ + Ballon Officiel",
-    },
-    create: {
-      id: "contest-summer-2024",
-      name: "Concours Été 2024",
-      description: "Participez et gagnez des prix exclusifs !",
-      firstPrize: "1000 CHZ + Maillot Collector Mbappé",
-      secondPrize: "500 CHZ + Maillot Messi",
-      thirdPrize: "250 CHZ + Ballon Officiel",
-      status: "ACTIVE",
-    },
-  });
-
   // Créer quelques scans d'exemple
   await prisma.scan.upsert({
     where: { id: "scan-1" },
@@ -90,7 +71,6 @@ async function main() {
 
   console.log("✅ Database seeded successfully!");
   console.log("👕 Jerseys created:", jersey1.name, jersey2.name);
-  console.log("🏆 Contest created:", contest.name);
   console.log(
     "📱 Sample wallet addresses: 0x1234567890abcdef, 0xabcdef1234567890"
   );
