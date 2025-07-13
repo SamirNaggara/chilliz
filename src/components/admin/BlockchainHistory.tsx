@@ -8,7 +8,7 @@ import { ExternalLink, Trophy, Users, RefreshCw } from "lucide-react";
 import { blockchainUtils } from "@/lib/chiliz-blockchain";
 
 interface BlockchainEvent {
-  type: 'LOTTERY_PARTICIPATION' | 'WINNER_ANNOUNCEMENT';
+  type: "LOTTERY_PARTICIPATION" | "WINNER_ANNOUNCEMENT";
   contestId: string;
   walletAddress: string;
   data: any;
@@ -36,10 +36,12 @@ export function BlockchainHistory({ contestId }: BlockchainHistoryProps) {
   });
 
   const fetchHistory = async () => {
-    setHistory(prev => ({ ...prev, loading: true, error: undefined }));
+    setHistory((prev) => ({ ...prev, loading: true, error: undefined }));
 
     try {
-      const response = await fetch(`/api/blockchain/contests/${contestId}/history`);
+      const response = await fetch(
+        `/api/blockchain/contests/${contestId}/history`
+      );
       const result = await response.json();
 
       if (result.success) {
@@ -50,14 +52,14 @@ export function BlockchainHistory({ contestId }: BlockchainHistoryProps) {
           loading: false,
         });
       } else {
-        setHistory(prev => ({
+        setHistory((prev) => ({
           ...prev,
           loading: false,
           error: result.error,
         }));
       }
     } catch (error) {
-      setHistory(prev => ({
+      setHistory((prev) => ({
         ...prev,
         loading: false,
         error: "Erreur lors du chargement",
@@ -70,23 +72,27 @@ export function BlockchainHistory({ contestId }: BlockchainHistoryProps) {
   }, [contestId]);
 
   const getEventTypeLabel = (type: string, data: any) => {
-    if (type === 'LOTTERY_PARTICIPATION') {
+    if (type === "LOTTERY_PARTICIPATION") {
       // Distinguer les participations avec co-signature
-      return data?.type === 'LOTTERY_PARTICIPATION_CO_SIGNED' 
-        ? 'Participation (Co-signée)' 
-        : 'Participation';
+      return data?.type === "LOTTERY_PARTICIPATION_CO_SIGNED"
+        ? "Participation (Co-signée)"
+        : "Participation";
     }
-    return 'Annonce gagnant';
+    return "Annonce gagnant";
   };
 
   const getEventIcon = (type: string) => {
-    return type === 'LOTTERY_PARTICIPATION' ? <Users className="w-4 h-4" /> : <Trophy className="w-4 h-4" />;
+    return type === "LOTTERY_PARTICIPATION" ? (
+      <Users className="w-4 h-4" />
+    ) : (
+      <Trophy className="w-4 h-4" />
+    );
   };
 
   const getEventColor = (type: string) => {
-    return type === 'LOTTERY_PARTICIPATION' 
-      ? 'bg-blue-100 text-blue-800' 
-      : 'bg-yellow-100 text-yellow-800';
+    return type === "LOTTERY_PARTICIPATION"
+      ? "bg-blue-100 text-blue-800"
+      : "bg-yellow-100 text-yellow-800";
   };
 
   if (history.loading) {
@@ -129,10 +135,9 @@ export function BlockchainHistory({ contestId }: BlockchainHistoryProps) {
     );
   }
 
-  const allEvents = [
-    ...history.participations,
-    ...history.winners,
-  ].sort((a, b) => b.timestamp - a.timestamp);
+  const allEvents = [...history.participations, ...history.winners].sort(
+    (a, b) => b.timestamp - a.timestamp
+  );
 
   return (
     <Card>
@@ -143,9 +148,7 @@ export function BlockchainHistory({ contestId }: BlockchainHistoryProps) {
             Historique Blockchain
           </CardTitle>
           <div className="flex items-center gap-2">
-            <Badge variant="outline">
-              {history.totalEvents} événements
-            </Badge>
+            <Badge variant="outline">{history.totalEvents} événements</Badge>
             <Button onClick={fetchHistory} size="sm" variant="outline">
               <RefreshCw className="w-4 h-4" />
             </Button>
@@ -165,7 +168,9 @@ export function BlockchainHistory({ contestId }: BlockchainHistoryProps) {
               <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                 <div className="flex items-center gap-2 mb-1">
                   <Users className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-800">Participations</span>
+                  <span className="text-sm font-medium text-blue-800">
+                    Participations
+                  </span>
                 </div>
                 <div className="text-2xl font-bold text-blue-900">
                   {history.participations.length}
@@ -174,7 +179,9 @@ export function BlockchainHistory({ contestId }: BlockchainHistoryProps) {
               <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
                 <div className="flex items-center gap-2 mb-1">
                   <Trophy className="w-4 h-4 text-yellow-600" />
-                  <span className="text-sm font-medium text-yellow-800">Gagnants</span>
+                  <span className="text-sm font-medium text-yellow-800">
+                    Gagnants
+                  </span>
                 </div>
                 <div className="text-2xl font-bold text-yellow-900">
                   {history.winners.length}
@@ -184,17 +191,23 @@ export function BlockchainHistory({ contestId }: BlockchainHistoryProps) {
 
             {/* Timeline des événements */}
             <div>
-              <h4 className="font-medium text-gray-800 mb-3">Timeline des événements</h4>
+              <h4 className="font-medium text-gray-800 mb-3">
+                Timeline des événements
+              </h4>
               <div className="space-y-3 max-h-96 overflow-y-auto">
                 {allEvents.map((event, index) => (
                   <div
                     key={`${event.type}-${event.walletAddress}-${index}`}
                     className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border"
                   >
-                    <div className={`p-2 rounded-full ${getEventColor(event.type)}`}>
+                    <div
+                      className={`p-2 rounded-full ${getEventColor(
+                        event.type
+                      )}`}
+                    >
                       {getEventIcon(event.type)}
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-medium text-sm">
@@ -203,74 +216,97 @@ export function BlockchainHistory({ contestId }: BlockchainHistoryProps) {
                         <Badge variant="secondary" className="text-xs">
                           {blockchainUtils.formatTimestamp(event.timestamp)}
                         </Badge>
-                        {event.data?.type === 'LOTTERY_PARTICIPATION_CO_SIGNED' && (
-                          <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-800">
+                        {event.data?.type ===
+                          "LOTTERY_PARTICIPATION_CO_SIGNED" && (
+                          <Badge
+                            variant="secondary"
+                            className="text-xs bg-purple-100 text-purple-800"
+                          >
                             🤝 Co-signée
                           </Badge>
                         )}
                       </div>
-                      
+
                       <div className="text-xs text-gray-600 space-y-1">
                         <div>
                           <span className="font-medium">Wallet:</span>{" "}
                           {blockchainUtils.formatAddress(event.walletAddress)}
                         </div>
-                        
-                        {event.type === 'LOTTERY_PARTICIPATION' && event.data.username && (
-                          <div>
-                            <span className="font-medium">Utilisateur:</span> {event.data.username}
-                          </div>
-                        )}
-                        
-                        {event.type === 'LOTTERY_PARTICIPATION' && event.data.jerseyId && (
-                          <div>
-                            <span className="font-medium">Jersey:</span> {event.data.jerseyId}
-                          </div>
-                        )}
-                        
-                        {event.type === 'WINNER_ANNOUNCEMENT' && event.data.prize && (
-                          <div>
-                            <span className="font-medium">Prix:</span> {event.data.prize}
-                          </div>
-                        )}
 
-                        {event.type === 'WINNER_ANNOUNCEMENT' && event.data.username && (
-                          <div>
-                            <span className="font-medium">Gagnant:</span> {event.data.username}
-                          </div>
-                        )}
+                        {event.type === "LOTTERY_PARTICIPATION" &&
+                          event.data.username && (
+                            <div>
+                              <span className="font-medium">Utilisateur:</span>{" "}
+                              {event.data.username}
+                            </div>
+                          )}
+
+                        {event.type === "LOTTERY_PARTICIPATION" &&
+                          event.data.jerseyId && (
+                            <div>
+                              <span className="font-medium">Jersey:</span>{" "}
+                              {event.data.jerseyId}
+                            </div>
+                          )}
+
+                        {event.type === "WINNER_ANNOUNCEMENT" &&
+                          event.data.prize && (
+                            <div>
+                              <span className="font-medium">Prix:</span>{" "}
+                              {event.data.prize}
+                            </div>
+                          )}
+
+                        {event.type === "WINNER_ANNOUNCEMENT" &&
+                          event.data.username && (
+                            <div>
+                              <span className="font-medium">Gagnant:</span>{" "}
+                              {event.data.username}
+                            </div>
+                          )}
 
                         {event.transactionHash && (
                           <div className="flex items-center gap-1">
                             <span className="font-medium">TX:</span>
                             <span className="font-mono">
-                              {blockchainUtils.formatTxHash(event.transactionHash)}
+                              {blockchainUtils.formatTxHash(
+                                event.transactionHash
+                              )}
                             </span>
                             {event.data.blockchainConfirmed && (
-                              <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+                              <Badge
+                                variant="secondary"
+                                className="text-xs bg-green-100 text-green-800"
+                              >
                                 ✓ Confirmé
                               </Badge>
                             )}
                           </div>
                         )}
 
-                        {event.data?.type === 'LOTTERY_PARTICIPATION_CO_SIGNED' && event.data?.serverSigner && (
-                          <div className="flex items-center gap-1">
-                            <span className="font-medium">Serveur:</span>
-                            <span className="font-mono text-xs">
-                              {blockchainUtils.formatAddress(event.data.serverSigner)}
-                            </span>
-                          </div>
-                        )}
+                        {event.data?.type ===
+                          "LOTTERY_PARTICIPATION_CO_SIGNED" &&
+                          event.data?.serverSigner && (
+                            <div className="flex items-center gap-1">
+                              <span className="font-medium">Serveur:</span>
+                              <span className="font-mono text-xs">
+                                {blockchainUtils.formatAddress(
+                                  event.data.serverSigner
+                                )}
+                              </span>
+                            </div>
+                          )}
                       </div>
                     </div>
 
                     {event.transactionHash && (
                       <Button
-                        onClick={() => 
+                        onClick={() =>
                           window.open(
-                            blockchainUtils.getExplorerLink(event.transactionHash!), 
-                            '_blank'
+                            blockchainUtils.getExplorerLink(
+                              event.transactionHash!
+                            ),
+                            "_blank"
                           )
                         }
                         size="sm"
@@ -289,9 +325,11 @@ export function BlockchainHistory({ contestId }: BlockchainHistoryProps) {
               <div className="flex items-start gap-2">
                 <div className="w-1 h-1 bg-orange-500 rounded-full mt-2"></div>
                 <div className="text-xs text-orange-800">
-                  <strong>Réseau:</strong> Chiliz Spicy Testnet<br />
-                  <strong>Vérifiabilité:</strong> Tous les événements sont enregistrés de manière transparente 
-                  sur la blockchain et peuvent être vérifiés publiquement via l&apos;explorateur.
+                  <strong>Réseau:</strong> Chiliz Spicy Testnet
+                  <br />
+                  <strong>Vérifiabilité:</strong> Tous les événements sont
+                  enregistrés de manière transparente sur la blockchain et
+                  peuvent être vérifiés publiquement via l&apos;explorateur.
                 </div>
               </div>
             </div>
