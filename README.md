@@ -1,5 +1,11 @@
 # POC Chilliz - PSG Jersey Scanner
 
+> **1re place du main track, Hacking Paris Contest 2025** (Chiliz, Parc des Princes, 90 projets).
+> Démo : https://chilliz.vercel.app
+>
+> Le sujet : engagement des fans par NFC. Le supporter scanne son maillot pendant le match, aux moments clés (buts), pour interagir avec le club et participer à des tirages au sort.
+> Réalisé en cinq jours pendant le contest. Stack : Next.js 15, Prisma, PostgreSQL, shadcn/ui, Chiliz Chain.
+
 ## 🎯 Objectif du Projet
 
 Application Next.js 15 pour scanner des puces sécurisées sur des maillots PSG et offrir une expérience utilisateur gamifiée avec intégration Chilliz.
