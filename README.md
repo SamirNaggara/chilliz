@@ -3,7 +3,7 @@
 > **1re place du main track, Hacking Paris Contest 2025** (Chiliz, Parc des Princes, 13 au 17 juillet 2025, 90 projets).
 > Démo : https://chilliz.vercel.app
 
-**Contexte.** Ce projet a été réalisé en cinq jours pendant le hackathon, en s'appuyant beaucoup sur l'IA pour aller vite. Le code n'est donc pas toujours très propre : peu de tests, des raccourcis, des notes laissées dans le dépôt. Il a gagné et il tourne, c'est ce qui comptait. Je le laisse tel quel, comme trace de ce qui peut se faire en cinq jours.
+**Contexte.** Ce projet a été réalisé en deux jours pendant le hackathon, en s'appuyant beaucoup sur l'IA pour aller vite. Le code n'est donc pas toujours très propre : peu de tests, des raccourcis, des notes laissées dans le dépôt. Il a gagné et il tourne, c'est ce qui comptait. Je le laisse tel quel, comme trace de ce qui peut se faire en deux jours.
 
 ## L'idée
 
