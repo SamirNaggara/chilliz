@@ -1,13 +1,5 @@
 {
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "framework": "nextjs",
-  "env": {
-    "DATABASE_URL": "file:./dev.db"
-  },
-  "build": {
-    "env": {
-      "DATABASE_URL": "file:./dev.db"
-    }
-  }
+  "framework": "nextjs"
 }
